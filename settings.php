@@ -32,4 +32,12 @@ $grc_rpc_wallet_passphrase="";
 // ReCAPTHCA
 $recaptcha_private_key="";
 $recaptcha_public_key="";
+
+// Site settings
+$settings_api_enabled=TRUE;
+$settings_payouts_enabled=TRUE;
+$settings_login_enabled=TRUE;
+
+$address_url="https://www.gridcoinstats.eu/address/";
+$tx_url="https://www.gridcoinstats.eu/tx/";
 ?>
