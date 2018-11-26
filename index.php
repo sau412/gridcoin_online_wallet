@@ -43,21 +43,59 @@ if(isset($_POST) && isset($_POST['action'])) {
                 if($result!=TRUE) $message="Sending error";
         } else if($action=='new_address') {
                 user_create_new_address($user_uid);
+        } else if($action=='add_alias') {
+                $address=stripslashes($_POST['address']);
+                $name=stripslashes($_POST['name']);
+                set_alias($user_uid,$name,$address);
         }
         if(isset($message) && $message!='') setcookie("message",$message);
         header("Location: ./");
         die();
 }
 
-echo html_page_begin($wallet_name);
-
-if(!$user_uid) {
-        echo html_login_form($token);
-        echo html_register_form($token);
-} else {
-        echo html_logout_form($token);
-        echo html_wallet_form($user_uid,$token);
+if(isset($_GET['ajax']) && isset($_GET['block'])) {
+        switch($_GET['block']) {
+                case 'address_book':
+                        $limit=10000;
+                        $form=TRUE;
+                        echo html_address_book($user_uid,$token,$form,$limit);
+                        break;
+                case 'control':
+                        break;
+                case 'dashboard':
+                        echo html_wallet_form($user_uid,$token);
+                        break;
+                case 'login':
+                        echo html_login_form($token);
+                        break;
+                case 'receive':
+                        $limit=10000;
+                        $form=TRUE;
+                        echo html_receiving_addresses($user_uid,$token,$form,$limit);
+                        break;
+                case 'register':
+                        echo html_register_form($token);
+                        break;
+                case 'send':
+                        $limit=10;
+                        $form=FALSE;
+                        echo html_balance_and_send($user_uid,$token);
+                        echo html_address_book($user_uid,$token,$form,$limit);
+                        break;
+                case 'settings':
+                        break;
+                case 'transactions':
+                        $limit=10000;
+                        echo html_transactions($user_uid,$token,$limit);
+                        break;
+        }
+        die();
 }
+
+echo html_page_begin($wallet_name);
+echo html_logout_form($token);
+echo html_tabs($user_uid);
+echo html_loadable_block();
 
 //echo "Session $session\n";
 //echo "User uid '$user_uid'\n";
