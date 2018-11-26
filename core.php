@@ -26,7 +26,7 @@ function validate_ascii($string) {
 
 // Checks is string contains number
 function validate_number($string) {
-        if(strlen($string)>100) return FALSE;
+        if(strlen($string)>20) return FALSE;
         if(is_string($string)==FALSE) return FALSE;
         return is_numeric($string);
 }
@@ -206,16 +206,20 @@ function user_send($user_uid,$amount,$address) {
         $amount_escaped=db_escape($amount);
         $address_escaped=db_escape($address);
         db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`) VALUES ('$user_uid_escaped','$amount_escaped','$address_escaped','processing')");
+        $transaction_uid=mysql_insert_id();
 
         // Adjust user balance
         update_user_balance($user_uid);
-        return TRUE;
+        return $transaction_uid;
 }
 
 // Create request for new address
+// Returns requiest uid
 function user_create_new_address($user_uid) {
         $user_uid_escaped=db_escape($user_uid);
         db_query("INSERT INTO `wallets` (`user_uid`) VALUES ('$user_uid_escaped')");
+        $address_uid=mysql_insert_id();
+        return $address_uid;
 }
 
 function recaptcha_check($response) {
@@ -234,6 +238,20 @@ function recaptcha_check($response) {
         else return FALSE;
 }
 
+// Add/modify/del alias
+function set_alias($user_uid,$label,$address) {
+        $label_escaped=db_escape($label);
+        $address_escaped=db_escape($address);
+        $user_uid_escaped=db_escape($user_uid);
+        if($address=='') return FALSE;
+        if($label=='') {
+                db_query("DELETE FROM `aliases` WHERE `address`='$address_escaped' AND `user_uid`='$user_uid_escaped'");
+                return TRUE;
+        } else {
+                db_query("INSERT INTO `aliases` (`user_uid`,`address`,`label`) VALUES ('$user_uid_escaped','$address_escaped','$label_escaped') ON DUPLICATE KEY UPDATE `label`=VALUES(`label`)");
+                return TRUE;
+        }
+}
 
 // For php 5 only variant for random_bytes is openssl_random_pseudo_bytes from openssl lib
 if(!function_exists("random_bytes")) {
