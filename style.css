@@ -70,3 +70,8 @@
         background-color: #AAF;
 }
 
+/* Message */
+.message {
+        border: 1px solid #888;
+        background-color: #FF8;
+}
