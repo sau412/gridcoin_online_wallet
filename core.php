@@ -9,9 +9,12 @@ function html_escape($data) {
 }
 
 // Add message to log
-function write_log($message) {
+function write_log($message,$user_uid='') {
         $message_escaped=db_escape($message);
-        db_query("INSERT INTO `log` (`message`) VALUES ('$message_escaped')");
+        $user_uid_escaped=db_escape($user_uid);
+        if($user_uid_escaped=='') $user_uid_escaped="NULL";
+        else $user_uid_escaped="'$user_uid_escaped'";
+        db_query("INSERT INTO `log` (`message`,`user_uid`) VALUES ('$message_escaped',$user_uid_escaped)");
 }
 
 // Checks is string contains only ASCII symbols
@@ -81,10 +84,10 @@ function get_user_token_by_session($session) {
 }
 
 // Create new user
-function user_register($session,$mail,$login,$password1,$password2) {
+function user_register($session,$mail,$login,$password1,$password2,$withdraw_address) {
         global $global_salt;
 
-        if($password1!=$password2) return FALSE;
+        if($password1!=$password2) return "register_failed_password_mismatch";
 
         $session_escaped=db_escape($session);
         $salt=bin2hex(random_bytes(16));
@@ -97,31 +100,34 @@ function user_register($session,$mail,$login,$password1,$password2) {
         if(validate_ascii($login)) {
                 $login_escaped=db_escape($login);
                 $mail_escaped=db_escape($mail);
+                $withdraw_address_escaped=db_escape($withdraw_address);
                 $exists_hash=db_query_to_variable("SELECT `password_hash` FROM `users` WHERE `login`='$login_escaped'");
+                $api_key=bin2hex(random_bytes(16));
+                $api_key_escaped=db_escape($api_key);
                 if($exists_hash=="") {
                         write_log("New user '$login' mail '$mail'");
-                        db_query("INSERT INTO `users` (`mail`,`login`,`password_hash`,`salt`,`register_time`,`login_time`) VALUES ('$mail_escaped','$login_escaped','$password_hash','$salt_escaped',NOW(),NOW())");
+                        db_query("INSERT INTO `users` (`mail`,`login`,`password_hash`,`salt`,`register_time`,`login_time`,`withdraw_address`,`api_key`)
+VALUES ('$mail_escaped','$login_escaped','$password_hash','$salt_escaped',NOW(),NOW(),'$withdraw_address_escaped','$api_key_escaped')");
                         $user_uid=db_query_to_variable("SELECT `uid` FROM `users` WHERE `login`='$login_escaped'");
                         $user_uid_escaped=db_escape($user_uid);
                         db_query("UPDATE `sessions` SET `user_uid`='$user_uid_escaped' WHERE `session`='$session_escaped'");
                         user_create_new_address($user_uid);
+                        return "register_successfull";
                         return TRUE;
                 } else if($password_hash==$exists_hash) {
                         write_log("Logged in '$login'");
                         $user_uid=db_query_to_variable("SELECT `uid` FROM `users` WHERE `login`='$login_escaped'");
                         $user_uid_escaped=db_escape($user_uid);
                         db_query("UPDATE `sessions` SET `user_uid`='$user_uid_escaped' WHERE `session`='$session_escaped'");
-                        return TRUE;
+                        return "login_successfull";
                 } else {
                         write_log("Invalid password for '$login'");
-                        $message="Invalid password";
-                        return TRUE;
+                        return "register_failed_invalid_password";
                 }
         } else {
                 write_log("Invalid login for '$login'");
-                $message="Invalid login";
+                return "register_failed_invalid_login";
         }
-        return $message;
 }
 
 // Check user login and password
@@ -141,20 +147,97 @@ function user_login($session,$login,$password) {
                 if($password_hash==$exists_hash) {
                         write_log("Logged in user '$login'");
                         $user_uid=db_query_to_variable("SELECT `uid` FROM `users` WHERE `login`='$login_escaped'");
+                        notify_user($user_uid,"Logged in $login","IP: ".$_SERVER['REMOTE_ADDR']);
                         $user_uid_escaped=db_escape($user_uid);
                         db_query("UPDATE `sessions` SET `user_uid`='$user_uid' WHERE `session`='$session_escaped'");
                         db_query("UPDATE `users` SET `login_time`=NOW() WHERE `uid`='$user_uid_escaped'");
-                        return TRUE;
+                        return "login_successfull";
                 } else {
                         write_log("Invalid password for '$login'");
-                        $message="Invalid password";
-                        return FALSE;
+                        notify_user($user_uid,"Log in failed","IP: ".$_SERVER['REMOTE_ADDR']);
+                        return "login_failed_invalid_password";
                 }
         } else {
                 write_log("Invalid login for '$login'");
-                $message="Invalid login";
-                return FALSE;
+                return "login_failed_invalid_login";
         }
+}
+
+// Change settings
+function user_change_settings($user_uid,$mail,$mail_notify_enabled,$api_enabled,$renew_api_key,$withdraw_address,$password,$new_password1,$new_password2) {
+        global $global_salt;
+
+        if($new_password1!=$new_password2) {
+                notify_user($user_uid,"Change settings fail","Change settings failed, new password mismatch");
+                return "user_change_settings_failed_new_password_mismatch";
+        }
+
+        $user_uid_escaped=db_escape($user_uid);
+        $user_data_array=db_query_to_array("SELECT `mail`,`login`,`salt`,`password_hash`,`api_enabled`,`mail_notify_enabled`,`mail_2fa_enabled`,`withdraw_address` FROM `users` WHERE `uid`='$user_uid_escaped'");
+        $user_data=array_pop($user_data_array);
+        $login=$user_data['login'];
+        $salt=$user_data['salt'];
+        $password_hash=$user_data['password_hash'];
+        $entered_password_hash=hash("sha256",$password.strtolower($login).$salt.$global_salt);
+
+        if($password_hash==$entered_password_hash) {
+                if($mail!=$user_data['mail']) {
+                        notify_user($user_uid,"Settings changed","E-mail changed to: $mail");
+                        $mail_escaped=db_escape($mail);
+                        db_query("UPDATE `users` SET `mail`='$mail_escaped' WHERE `uid`='$user_uid_escaped'");
+                        $change_log="New e-mail: $mail\n";
+                }
+                $mail_notify_enabled_value=$mail_notify_enabled=="enabled"?1:0;
+                if($mail_notify_enabled_value!=$user_data['mail_notify_enabled']) {
+                        db_query("UPDATE `users` SET `mail_notify_enabled`=$mail_notify_enabled_value WHERE `uid`='$user_uid_escaped'");
+                        $change_log="E-mail notify state: $mail_notify_enabled_value\n";
+                }
+
+                $api_enabled_value=$api_enabled=="enabled"?1:0;
+                if($api_enabled_value!=$user_data['api_enabled']) {
+                        db_query("UPDATE `users` SET `api_enabled`=$api_enabled_value WHERE `uid`='$user_uid_escaped'");
+                        $change_log="API state: $api_enabled_value\n";
+                }
+
+                if($renew_api_key=='yes') {
+                        $new_api_key=bin2hex(random_bytes(16));
+                        $new_api_key_escaped=db_escape($new_api_key);
+                        db_query("UPDATE `users` SET `api_key`='$new_api_key_escaped' WHERE `uid`='$user_uid_escaped'");
+                        $change_log="API key updated\n";
+                }
+
+                if($new_password1!='') {
+                        $new_password_hash=hash("sha256",$new_password1.strtolower($login).$salt.$global_salt);
+                        $new_password_hash_escaped=db_escape($new_password_hash);
+                        db_query("UPDATE `users` SET `password_hash`='$new_password_hash_escaped' WHERE `uid`='$user_uid_escaped'");
+                        $change_log="New password applied\n";
+                }
+
+                if($withdraw_address!=$user_data['withdraw_address']) {
+                        $withdraw_address_escaped=db_escape($withdraw_address);
+                        db_query("UPDATE `users` SET `withdraw_address`='$withdraw_address_escaped' WHERE `uid`='$user_uid_escaped'");
+                        $change_log="New withdraw address: $withdraw_address\n";
+                }
+
+                notify_user($user_uid,"Settings changed",$change_log);
+                return "user_change_settings_successfull";
+        } else {
+                notify_user($user_uid,"Change settings fail","Change settings failed, password incorrect");
+                return "user_change_settings_failed_password_incorrect";
+        }
+}
+
+// Admin change settings
+function admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info) {
+        $login_enabled_value=$login_enabled=="enabled"?"1":"0";
+        set_variable("login_enabled",$login_enabled_value);
+        $payouts_enabled_value=$payouts_enabled=="enabled"?"1":"0";
+        set_variable("login_enabled",$payouts_enabled_value);
+        $api_enabled_value=$api_enabled=="enabled"?"1":"0";
+        set_variable("login_enabled",$api_enabled_value);
+
+        set_variable("info",$info);
+        return "admin_change_settings_successfull";
 }
 
 // Get username by uid
@@ -169,9 +252,11 @@ function user_logout($session) {
         $user_uid=get_user_uid_by_session($session);
         $username=get_username_by_uid($user_uid);
         write_log("Logged out user '$username'");
+        notify_user($user_uid,"Log out $username","IP: ".$_SERVER['REMOTE_ADDR']);
 
         $session_escaped=db_escape($session);
         db_query("UPDATE `sessions` SET `user_uid`=NULL WHERE `session`='$session_escaped'");
+        return "logout_successfull";
 }
 
 // Get user balance
@@ -190,13 +275,26 @@ function update_user_balance($user_uid) {
         db_query("UPDATE `users` SET `balance`='$balance' WHERE `uid`='$user_uid_escaped'");
 }
 
+// Notify user
+function notify_user($user_uid,$subject,$body) {
+        $user_uid_escaped=db_escape($user_uid);
+        $mail=db_query_to_variable("SELECT `mail` FROM `users` WHERE `uid`='$user_uid_escaped'");
+        $mail_notify_enabled=db_query_to_variable("SELECT `mail_notify_enabled` FROM `users` WHERE `uid`='$user_uid_escaped'");
+        if($mail && $mail_notify_enabled) {
+                email_add($user_uid,$mail,$subject,$body);
+        }
+}
+
 // Send
 function user_send($user_uid,$amount,$address) {
+        global $currency_short;
+
         // Validate data
         if(!validate_number($amount)) return FALSE;
         if(!validate_ascii($address)) return FALSE;
         if($amount<=0) return FALSE;
         if($address=="") return FALSE;
+
         // Check user balance
         $balance=get_user_balance($user_uid);
         if($balance<$amount) return FALSE;
@@ -210,6 +308,12 @@ function user_send($user_uid,$amount,$address) {
 
         // Adjust user balance
         update_user_balance($user_uid);
+
+        // Send notifications
+        $username=get_username_by_uid($user_uid);
+        write_log("'$username' sent '$amount' $currency_short",$user_uid);
+        notify_user($user_uid,"$username sent $amount $currency_short","IP: ".$_SERVER['REMOTE_ADDR']);
+
         return $transaction_uid;
 }
 
@@ -246,11 +350,19 @@ function set_alias($user_uid,$label,$address) {
         if($address=='') return FALSE;
         if($label=='') {
                 db_query("DELETE FROM `aliases` WHERE `address`='$address_escaped' AND `user_uid`='$user_uid_escaped'");
-                return TRUE;
+                return "alias_deleted";
         } else {
                 db_query("INSERT INTO `aliases` (`user_uid`,`address`,`label`) VALUES ('$user_uid_escaped','$address_escaped','$label_escaped') ON DUPLICATE KEY UPDATE `label`=VALUES(`label`)");
-                return TRUE;
+                return "alias_changed";
         }
+}
+
+// Checks is user admin
+function is_admin($user_uid) {
+        $user_uid_escaped=db_escape($user_uid);
+        $result=db_query_to_variable("SELECT `is_admin` FROM `users` WHERE `uid`='$user_uid_escaped'");
+        if($result==1) return TRUE;
+        else return FALSE;
 }
 
 // For php 5 only variant for random_bytes is openssl_random_pseudo_bytes from openssl lib
