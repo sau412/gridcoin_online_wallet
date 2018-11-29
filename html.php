@@ -15,7 +15,6 @@ function html_page_begin($title) {
 <script src='jquery-3.3.1.min.js'></script>
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src='script.js'></script>
-<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body>
 <center>
@@ -55,6 +54,7 @@ function html_login_form($token) {
 <input type=hidden name=token value='$token'>
 <p>Login: <input type=text name=login></p>
 <p>Password: <input type=password name=password></p>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <div class="g-recaptcha" data-sitekey="$recaptcha_public_key"></div>
 <p><input type=submit value='Login'></p>
 </form>
@@ -63,13 +63,10 @@ _END;
         return $result;
 }
 
-function html_logout_form($token) {
+function html_logout_form($user_uid,$token) {
+        $username=get_username_by_uid($user_uid);
         $result=<<<_END
-<form name=login method=post>
-<input type=hidden name=action value='logout'>
-<input type=hidden name=token value='$token'>
-<p><input type=submit value='Logout'></p>
-</form>
+<p>Welcome, $username (<a href='?action=logout&token=$token'>logout</a>)</p>
 
 _END;
         return $result;
@@ -98,6 +95,8 @@ function html_register_form($token) {
 <p>E-mail: <input type=text name=mail></p>
 <p>Password 1: <input type=password name=password1></p>
 <p>Password 2: <input type=password name=password2></p>
+<p>Withdraw address: <input type=text name=withdraw_address></p>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <div class="g-recaptcha" data-sitekey="$recaptcha_public_key"></div>
 <p><input type=submit value='Register'></p>
 </form>
@@ -108,19 +107,27 @@ _END;
 
 function html_tabs($user_uid) {
         $result="";
+        $result.="<div style='display: inline-block;'>\n";
         $result.="<ul class=horizontal_menu>\n";
         if($user_uid) {
+                $result.=html_menu_element("info","Info");
                 $result.=html_menu_element("dashboard","Dashboard");
                 $result.=html_menu_element("send","Send");
                 $result.=html_menu_element("receive","Receive");
                 $result.=html_menu_element("transactions","Transactions");
                 $result.=html_menu_element("address_book","Address book");
                 $result.=html_menu_element("settings","Settings");
+                if(is_admin($user_uid)) {
+                        $result.=html_menu_element("control","Control");
+                        $result.=html_menu_element("log","Log");
+                }
         } else {
+                $result.=html_menu_element("info","Info");
                 $result.=html_menu_element("login","Login");
                 $result.=html_menu_element("register","Register");
         }
         $result.="</ul>\n";
+        $result.="</div>\n";
 
         return $result;
 }
@@ -133,29 +140,17 @@ function html_wallet_form($user_uid,$token) {
         global $currency_short;
 
         $result="";
-
         $result.="<table><tr><td valign=top style='padding: 0 1em;'>";
+
         // Balance
         $result.=html_balance_and_send($user_uid,$token);
+        $result.=html_client_state();
 
         // Transactions
-        $limit=10;
+        $limit=8;
         $result.="</td><td valign=top style='padding: 0 1em;'>";
         $result.=html_transactions_big($user_uid,$token,$limit);
 
-/*
-        // Address book
-        $form=FALSE;
-        $limit=10;
-        $result.="</td></tr><tr><td valign=top>";
-        $result.=html_address_book($user_uid,$token,$form,$limit);
-
-        // Receiving addresses
-        $form=FALSE;
-        $limit=10;
-        $result.="</td></tr><tr><td valign=top>";
-        $result.=html_receiving_addresses($user_uid,$token,$form,$limit);
-*/
         $result.="</td></tr></table>";
 
         // Return result
@@ -163,7 +158,7 @@ function html_wallet_form($user_uid,$token) {
 }
 
 // Balance
-function html_balance_and_send($user_uid) {
+function html_balance_and_send($user_uid,$token) {
         global $currency_short;
 
         $result="";
@@ -270,6 +265,32 @@ function html_transactions($user_uid,$token,$limit=10) {
         return $result;
 }
 
+// Client state
+function html_client_state() {
+        $result="";
+
+        $result.="<h2>Client state</h2>\n";
+
+        // Block count
+        $current_block=get_variable("current_block");
+        $result.="<p>Current block: $current_block</p>\n";
+
+        // Block hash
+        $block_hash=get_variable("current_block_hash");
+        $block_hash=html_block_hash($block_hash);
+        $result.="<p>Current block hash: $block_hash</p>\n";
+
+        // Payouts enabled
+        $payouts_enabled=get_variable("payouts_enabled");
+        $result.="<p>Payouts enabled: $payouts_enabled</p>\n";
+
+        // Client state
+        $client_state=get_variable("client_state");
+        $result.="<p>Client state: $client_state</p>\n";
+
+        return $result;
+}
+
 // Transactions
 function html_transactions_big($user_uid,$token,$limit=10) {
         global $currency_short;
@@ -290,7 +311,7 @@ function html_transactions_big($user_uid,$token,$limit=10) {
 
                 switch($status) {
                         case 'sent':
-                        case 'sending':
+                        case 'processing':
                                 $amount="<span style='color:red;'>-$amount $currency_short</span>";
                                 $status_symbol="<span style='color:red;font-size:250%'>&minus;</span>";
                                 break;
@@ -307,12 +328,107 @@ function html_transactions_big($user_uid,$token,$limit=10) {
 
                 $address_url=html_address_url($address);
                 $tx_url=html_tx_url($tx_id);
-                $result.="<tr><td rowspan=2>$status_symbol</td><td align=right valign=bottom>$amount</td></tr>\n";
+                $result.="<tr><td rowspan=2 title='$status'>$status_symbol</td><td align=right valign=bottom>$amount</td></tr>\n";
                 $result.="<tr><td align=right valign=top>$address_url</td></tr>\n";
         }
         $result.="</table>\n";
 
         // Return result
+        return $result;
+}
+
+// User settings
+function html_user_settings($user_uid,$token) {
+        $result="";
+
+        $user_uid_escaped=db_escape($user_uid);
+        $user_settings_data=db_query_to_array("SELECT `mail`,`api_enabled`,`api_key`,`mail_notify_enabled`,`mail_2fa_enabled`,`withdraw_address` FROM `users` WHERE `uid`='$user_uid_escaped'");
+        $user_settings=array_pop($user_settings_data);
+        $mail=$user_settings['mail'];
+        $mail_notify_enabled=$user_settings['mail_notify_enabled'];
+        $mail_2fa_enabled=$user_settings['mail_2fa_enabled'];
+        $api_enabled=$user_settings['api_enabled'];
+        $api_key=$user_settings['api_key'];
+        $withdraw_address=$user_settings['withdraw_address'];
+
+        $result.="<h2>Settings</h2>\n";
+        $result.="<form name=user_settings method=post>\n";
+        $result.="<input type=hidden name=action value='user_change_settings'>\n";
+        $result.="<input type=hidden name=token value='$token'>\n";
+
+        // Notifications
+        //$result.="<h3>Mail settings</h3>\n";
+        $mail_html=html_escape($mail);
+        if($mail_notify_enabled) {
+                $mail_notify_enabled_selected='selected';
+        } else {
+                $mail_notify_enabled_selected='';
+        }
+        $result.="<p>E-mail <input type=text size=40 name=mail value='$mail_html'>";
+        $result.=", notifications state <select name=mail_notify_enabled><option>disabled</option><option $mail_notify_enabled_selected>enabled</option></select>";
+        //$result.=", 2FA <select name=mail_2fa_enabled><option>disabled</option><option>enabled</option></select>";
+        $result.="</p>";
+
+        // User options
+        //$result.="<h3>API settings</h3>\n";
+        $api_key_html=html_escape($api_key);
+        if($api_enabled) {
+                $api_enabled_selected='selected';
+        } else {
+                $api_enabled_selected='';
+        }
+        $result.="<p>API state <select name=api_enabled><option>disabled</option><option $api_enabled_selected>enabled</option></select>";
+        $result.=", regenerate API key <select name=renew_api_key><option>no</option><option>yes</option></select>";
+        $result.=", API key: <tt>$api_key_html</tt></p>";
+
+        // Withdraw addresss
+        //$result.="<h3>Withdraw address</h3>\n";
+        $withdraw_address_html=html_escape($withdraw_address);
+        $result.="<p>Withdraw address <input type=text size=40 name=withdraw_address value='$withdraw_address_html'></p>";
+
+        // Password options
+        //$result.="<h3>Password</h3>\n";
+        $result.="<p>Password (required to change settings) <input type=password name=password></p>";
+        $result.="<p>New password (if you want to change password) <input type=password name=new_password_1></p>";
+        $result.="<p>New password one more time <input type=password name=new_password_2></p>";
+
+        // Submit button
+        $result.="<p><input type=submit value='Apply'></p>\n";
+        $result.="</form>\n";
+
+        return $result;
+}
+
+// Admin settings
+function html_admin_settings($user_uid,$token) {
+        $result="";
+
+        $result.="<h2>Wallet settings</h2>\n";
+        $result.="<form name=admin_settings method=post>\n";
+        $result.="<input type=hidden name=action value='admin_change_settings'>\n";
+        $result.="<input type=hidden name=token value='$token'>\n";
+
+        $login_enabled=get_variable("login_enabled");
+        $login_enabled_selected=$login_enabled?"selected":"";
+
+        $payouts_enabled=get_variable("payouts_enabled");
+        $payouts_enabled_selected=$payouts_enabled?"selected":"";
+
+        $api_enabled=get_variable("api_enabled");
+        $api_enabled_selected=$api_enabled?"selected":"";
+
+        $result.="<p>Login/register state: <select name=login_enabled><option>disabled</option><option $login_enabled_selected>enabled</option></select>\n";
+        $result.=", payouts state: <select name=payouts_enabled><option>disabled</option><option $payouts_enabled_selected>enabled</option></select>\n";
+        $result.=", API state: <select name=api_enabled><option>disabled</option><option $api_enabled_selected>enabled</option></select></p>\n";
+
+        $info=get_variable("info");
+        $info_html=html_escape($info);
+        $result.="<textarea name=info rows=10 cols=50>$info_html</textarea>";
+
+        // Submit button
+        $result.="<p><input type=submit value='Apply'></p>\n";
+        $result.="</form>\n";
+
         return $result;
 }
 
@@ -344,7 +460,8 @@ function html_address_url($address) {
         $address_end=substr($address,-10,10);
         $send_to_link=html_send_to_link($address,"send to");
         $address_book_link=html_address_book_link($address,"address book");
-        $result="<div class='url_with_qr_container'>$address_begin......$address_end<div class='qr'>$address<br><a href='$address_url$address'>explorer</a>, <a href='#'>copy</a>, $send_to_link, $address_book_link<br><img src='qr.php?str=$address'></div></div>";
+        //$result="<div class='url_with_qr_container'>$address_begin......$address_end<div class='qr'>$address<br><a href='$address_url$address'>explorer</a>, <a href='#'>copy</a>, $send_to_link, $address_book_link<br><img src='qr.php?str=$address'></div></div>";
+        $result="<div class='url_with_qr_container'>$address<div class='qr'>$address<br><a href='$address_url$address'>explorer</a>, <a href='#'>copy</a>, $send_to_link, $address_book_link<br><img src='qr.php?str=$address'></div></div>";
         return $result;
 }
 
@@ -354,6 +471,15 @@ function html_tx_url($tx) {
         $tx_begin=substr($tx,0,10);
         $tx_end=substr($tx,-10,10);
         $result="<div class='url_with_qr_container'>$tx_begin......$tx_end<div class='qr'>$tx<br><a href='$tx_url$tx'>explorer</a>, <a href='#'>copy</a><br><img src='qr.php?str=$tx'></div></div>";
+        return $result;
+}
+
+function html_block_hash($hash) {
+        global $block_url;
+        if($hash=='') return '';
+        $hash_begin=substr($hash,0,10);
+        $hash_end=substr($hash,-10,10);
+        $result="<span class='url_with_qr_container'>$hash_begin......$hash_end<span class='qr'>$hash<br><a href='$block_url$hash'>explorer</a>, <a href='#'>copy</a><br><img src='qr.php?str=$hash'></span></span>";
         return $result;
 }
 
@@ -368,6 +494,14 @@ function html_address_book_link($address,$text) {
 // Loadable block for ajax
 function html_loadable_block() {
         return "<div id='main_block'>Loading block...</div>\n";
+}
+
+// Show info
+function html_info() {
+        $result='';
+        $result.="<h2>Info</h2>\n";
+        $result.=get_variable("info");
+        return $result;
 }
 
 ?>
