@@ -42,12 +42,13 @@ function email_send($to,$subject,$html_message) {
 }
 
 // Add email to send query
-function email_add($to,$subject,$body) {
+function email_add($user_uid,$to,$subject,$body) {
+        $user_uid_escaped=db_escape($user_uid);
         $to_escaped=db_escape($to);
         $subject_escaped=db_escape($subject);
         $body_escaped=db_escape($body);
 
-        db_query("INSERT INTO `email` (`to`,`subject`,`message`) VALUES ('$to_escaped','$subject_escaped','$body_escaped')");
+        db_query("INSERT INTO `mail` (`user_uid`,`to`,`subject`,`message`) VALUES ('$user_uid_escaped','$to_escaped','$subject_escaped','$body_escaped')");
 }
 
 // Set email status
