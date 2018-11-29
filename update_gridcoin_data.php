@@ -6,6 +6,21 @@ require_once("gridcoin.php");
 
 db_connect();
 
+// Get current block
+$network_block=grc_rpc_get_block_count();
+$wallet_block=get_variable("current_block");
+if(isset($wallet_block) && $wallet_block!=0 && isset($network_block) && $network_block!=0) {
+        if($network_block<$wallet_block) {
+                set_variable("payouts_enabled",0);
+                log_write("Wallet block '$wallet_block' greater than network block '$network_block', possible fork, sending disabled");
+        }
+}
+if(isset($network_block) && $network_block!=0) {
+        set_variable("current_block",$network_block);
+        $current_block_hash=grc_rpc_get_block_hash($network_block);
+        set_variable("current_block_hash",$current_block_hash);
+}
+
 // Get addresses received
 echo "Updating received amounts\n";
 $addresses_array=db_query_to_array("SELECT `uid`,`address` FROM `wallets` WHERE `address`<>'' AND `address` IS NOT NULL");
