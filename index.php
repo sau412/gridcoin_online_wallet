@@ -1,28 +1,35 @@
 <?php
 require_once("settings.php");
+require_once("language.php");
 require_once("db.php");
 require_once("core.php");
 require_once("html.php");
-//require_once("gridcoin.php");
+require_once("email.php");
 
 db_connect();
+
+$current_language=lang_load("en");
 
 $session=get_session();
 $user_uid=get_user_uid_by_session($session);
 $token=get_user_token_by_session($session);
 
-if(isset($_POST) && isset($_POST['action'])) {
-        $post_token=stripslashes($_POST['token']);
-        if($post_token!=$token) die("Wrong token");
+if(isset($_POST['action'])) $action=stripslashes($_POST['action']);
+else if(isset($_GET['action'])) $action=stripslashes($_GET['action']);
 
-        $action=stripslashes($_POST['action']);
+if(isset($action)) {
+        if(isset($_POST['token'])) $received_token=stripslashes($_POST['token']);
+        else if(isset($_GET['token'])) $received_token=stripslashes($_GET['token']);
+        if($received_token!=$token) die("Wrong token");
+
         if($action=='login') {
                 $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
                 if(recaptcha_check($recaptcha_response)) {
                         $login=stripslashes($_POST['login']);
                         $password=stripslashes($_POST['password']);
-                        $result=user_login($session,$login,$password);
-                        if($result!=TRUE) $message="Login error";
+                        $message=user_login($session,$login,$password);
+                } else {
+                        $message="login_failed_invalid_captcha";
                 }
         } else if($action=='register') {
                 $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
@@ -31,22 +38,45 @@ if(isset($_POST) && isset($_POST['action'])) {
                         $mail=stripslashes($_POST['mail']);
                         $password1=stripslashes($_POST['password1']);
                         $password2=stripslashes($_POST['password2']);
-                        $result=user_register($session,$mail,$login,$password1,$password2);
-                        if($result!=TRUE) $message="Register error";
+                        $withdraw_address=stripslashes($_POST['withdraw_address']);
+                        $message=user_register($session,$mail,$login,$password1,$password2,$withdraw_address);
+                } else {
+                        $message="register_failed_invalid_captcha";
                 }
         } else if($action=='logout') {
                 user_logout($session);
+                $message="logout_successfull";
         } else if($action=='send') {
                 $amount=stripslashes($_POST['amount']);
                 $address=stripslashes($_POST['address']);
                 $result=user_send($user_uid,$amount,$address);
-                if($result!=TRUE) $message="Sending error";
+                if($result) $message="send_successfull";
+                else $message="send_failed";
         } else if($action=='new_address') {
-                user_create_new_address($user_uid);
+                $result=user_create_new_address($user_uid);
+                if($result) $message="create_new_address_successfull";
+                else $message="create_new_address_failed";
         } else if($action=='add_alias') {
                 $address=stripslashes($_POST['address']);
                 $name=stripslashes($_POST['name']);
-                set_alias($user_uid,$name,$address);
+                $message=set_alias($user_uid,$name,$address);
+        } else if($action=='user_change_settings') {
+                $mail=stripslashes($_POST['mail']);
+                $mail_notify_enabled=stripslashes($_POST['mail_notify_enabled']);
+                $api_enabled=stripslashes($_POST['api_enabled']);
+                $renew_api_key=stripslashes($_POST['renew_api_key']);
+                $withdraw_address=stripslashes($_POST['withdraw_address']);
+                $password=stripslashes($_POST['password']);
+                $new_password1=stripslashes($_POST['new_password1']);
+                $new_password2=stripslashes($_POST['new_password2']);
+
+                $message=user_change_settings($user_uid,$mail,$mail_notify_enabled,$api_enabled,$renew_api_key,$withdraw_address,$password,$new_password1,$new_password2);
+        } else if($action=='admin_change_settings' && is_admin($user_uid)) {
+                $login_enabled=stripslashes($_POST['login_enabled']);
+                $payouts_enabled=stripslashes($_POST['payouts_enabled']);
+                $api_enabled=stripslashes($_POST['api_enabled']);
+                $info=stripslashes($_POST['info']);
+                $message=admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info);
         }
         if(isset($message) && $message!='') setcookie("message",$message);
         header("Location: ./");
@@ -54,46 +84,82 @@ if(isset($_POST) && isset($_POST['action'])) {
 }
 
 if(isset($_GET['ajax']) && isset($_GET['block'])) {
-        switch($_GET['block']) {
-                case 'address_book':
-                        $limit=10000;
-                        $form=TRUE;
-                        echo html_address_book($user_uid,$token,$form,$limit);
-                        break;
-                case 'control':
-                        break;
-                case 'dashboard':
-                        echo html_wallet_form($user_uid,$token);
-                        break;
-                case 'login':
-                        echo html_login_form($token);
-                        break;
-                case 'receive':
-                        $limit=10000;
-                        $form=TRUE;
-                        echo html_receiving_addresses($user_uid,$token,$form,$limit);
-                        break;
-                case 'register':
-                        echo html_register_form($token);
-                        break;
-                case 'send':
-                        $limit=10;
-                        $form=FALSE;
-                        echo html_balance_and_send($user_uid,$token);
-                        echo html_address_book($user_uid,$token,$form,$limit);
-                        break;
-                case 'settings':
-                        break;
-                case 'transactions':
-                        $limit=10000;
-                        echo html_transactions($user_uid,$token,$limit);
-                        break;
+        if($user_uid) {
+                switch($_GET['block']) {
+                        case 'address_book':
+                                $limit=10000;
+                                $form=TRUE;
+                                echo html_address_book($user_uid,$token,$form,$limit);
+                                break;
+                        case 'control':
+                                if(is_admin($user_uid)) {
+                                        echo html_admin_settings($user_uid,$token);
+                                }
+                                break;
+                        default:
+                        case 'dashboard':
+                                echo html_wallet_form($user_uid,$token);
+                                break;
+                        case 'info':
+                                echo html_info();
+                                break;
+                        case 'log':
+                                if(is_admin($user_uid)) {
+                                        echo html_log_section_admin();
+                                }
+                                break;
+                        case 'receive':
+                                $limit=10000;
+                                $form=TRUE;
+                                echo html_receiving_addresses($user_uid,$token,$form,$limit);
+                                break;
+                        case 'send':
+                                $limit=10;
+                                $form=FALSE;
+                                echo html_balance_and_send($user_uid,$token);
+                                echo html_address_book($user_uid,$token,$form,$limit);
+                                break;
+                        case 'settings':
+                                echo html_user_settings($user_uid,$token);
+                                break;
+                        case 'transactions':
+                                $limit=10000;
+                                echo html_transactions($user_uid,$token,$limit);
+                                break;
+                }
+        } else {
+                switch($_GET['block']) {
+                        default:
+                        case 'info':
+                                echo html_info();
+                                break;
+                        case 'login':
+                                echo html_login_form($token);
+                                break;
+                        case 'register':
+                                echo html_register_form($token);
+                                break;
+                }
         }
         die();
 }
 
+if(isset($_COOKIE['message'])) {
+        $message=$_COOKIE['message'];
+        setcookie("message","");
+} else {
+        $message="";
+}
 echo html_page_begin($wallet_name);
-echo html_logout_form($token);
+if($user_uid) {
+        echo html_logout_form($user_uid,$token);
+}
+if($message) {
+        $lang_message=lang_message($message);
+        if($lang_message!='') {
+                echo "<p class='message'>$lang_message</p>";
+        }
+}
 echo html_tabs($user_uid);
 echo html_loadable_block();
 
