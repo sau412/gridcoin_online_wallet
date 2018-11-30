@@ -153,6 +153,8 @@ switch($method) {
                 break;
         // Send specific amount to address
         case 'send':
+                if(get_variable("payouts_enabled")==0) die("Sending disabled");
+
                 $amount=stripslashes($_POST['amount']);
                 $address=stripslashes($_POST['address']);
                 if(!validate_number($amount)) die("Wrong amount");
