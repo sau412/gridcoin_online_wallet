@@ -5,3 +5,4 @@ I'm developing Gridcoin online wallet and describing process on steemit.
 1. https://steemit.com/gridcoin/@sau412/gridcoin-online-wallet
 2. https://steemit.com/gridcoin/@sau412/gridcoin-online-wallet-2
 3. https://steemit.com/gridcoin/@sau412/gridcoin-online-wallet-3
+4. https://steemit.com/gridcoin/@sau412/gridcoin-online-wallet-4
