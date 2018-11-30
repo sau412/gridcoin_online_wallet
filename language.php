@@ -16,6 +16,9 @@ $json_language=<<<_END
 "register_failed_invalid_captcha":{
         "en":"Register failed. Invalid captcha."
         },
+"register_failed_disabled":{
+        "en":"Register failed. Registration/login disabled."
+        },
 "register_successfull":{
         "en":"Register successfull."
         },
@@ -30,6 +33,9 @@ $json_language=<<<_END
         },
 "login_failed_invalid_captcha":{
         "en":"Login failed. Invalid captcha."
+        },
+"login_failed_disabled":{
+        "en":"Login failed. Registration/login disabled."
         },
 "user_change_settings_failed_new_password_mismatch":{
         "en":"Change settings failed. New password mismatch."
