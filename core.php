@@ -87,6 +87,8 @@ function get_user_token_by_session($session) {
 function user_register($session,$mail,$login,$password1,$password2,$withdraw_address) {
         global $global_salt;
 
+        if(get_variable("login_enabled")==0) return "register_failed_disabled";
+
         if($password1!=$password2) return "register_failed_password_mismatch";
 
         $session_escaped=db_escape($session);
@@ -142,13 +144,16 @@ function user_login($session,$login,$password) {
                 $login_escaped=db_escape($login);
                 $exists_hash=db_query_to_variable("SELECT `password_hash` FROM `users` WHERE `login`='$login_escaped'");
                 $salt=db_query_to_variable("SELECT `salt` FROM `users` WHERE `login`='$login_escaped'");
+                $user_uid=db_query_to_variable("SELECT `uid` FROM `users` WHERE `login`='$login_escaped'");
+                $user_uid_escaped=db_escape($user_uid);
+
+                if(get_variable("login_enabled")==0 && !is_admin($user_uid)) return "login_failed_disabled";
+
                 $password_hash=hash("sha256",$password.strtolower($login).$salt.$global_salt);
 
                 if($password_hash==$exists_hash) {
                         write_log("Logged in user '$login'");
-                        $user_uid=db_query_to_variable("SELECT `uid` FROM `users` WHERE `login`='$login_escaped'");
                         notify_user($user_uid,"Logged in $login","IP: ".$_SERVER['REMOTE_ADDR']);
-                        $user_uid_escaped=db_escape($user_uid);
                         db_query("UPDATE `sessions` SET `user_uid`='$user_uid' WHERE `session`='$session_escaped'");
                         db_query("UPDATE `users` SET `login_time`=NOW() WHERE `uid`='$user_uid_escaped'");
                         return "login_successfull";
@@ -228,15 +233,25 @@ function user_change_settings($user_uid,$mail,$mail_notify_enabled,$api_enabled,
 }
 
 // Admin change settings
-function admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info) {
+function admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info,$global_message) {
+        // Login enabled
         $login_enabled_value=$login_enabled=="enabled"?"1":"0";
         set_variable("login_enabled",$login_enabled_value);
-        $payouts_enabled_value=$payouts_enabled=="enabled"?"1":"0";
-        set_variable("login_enabled",$payouts_enabled_value);
-        $api_enabled_value=$api_enabled=="enabled"?"1":"0";
-        set_variable("login_enabled",$api_enabled_value);
 
+        // Payouts enabled
+        $payouts_enabled_value=$payouts_enabled=="enabled"?"1":"0";
+        set_variable("payouts_enabled",$payouts_enabled_value);
+
+        // API enabled
+        $api_enabled_value=$api_enabled=="enabled"?"1":"0";
+        set_variable("api_enabled",$api_enabled_value);
+
+        // News
         set_variable("info",$info);
+
+        // Global message
+        set_variable("global_message",$global_message);
+
         return "admin_change_settings_successfull";
 }
 
@@ -289,6 +304,9 @@ function notify_user($user_uid,$subject,$body) {
 function user_send($user_uid,$amount,$address) {
         global $currency_short;
 
+        // Check payouts enabled
+        if(get_variable("payouts_enabled")==0) return FALSE;
+
         // Validate data
         if(!validate_number($amount)) return FALSE;
         if(!validate_ascii($address)) return FALSE;
@@ -311,8 +329,8 @@ function user_send($user_uid,$amount,$address) {
 
         // Send notifications
         $username=get_username_by_uid($user_uid);
-        write_log("'$username' sent '$amount' $currency_short",$user_uid);
-        notify_user($user_uid,"$username sent $amount $currency_short","IP: ".$_SERVER['REMOTE_ADDR']);
+        write_log("'$username' sent '$amount' $currency_short to address '$address'",$user_uid);
+        notify_user($user_uid,"$username sent $amount $currency_short","Amount: $amount $currency_short\nAddress: $address\nIP: ".$_SERVER['REMOTE_ADDR']);
 
         return $transaction_uid;
 }
