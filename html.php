@@ -282,12 +282,29 @@ function html_client_state() {
 
         // Payouts enabled
         $payouts_enabled=get_variable("payouts_enabled");
-        $result.="<p>Payouts enabled: $payouts_enabled</p>\n";
+        $payouts_enabled_value=$payouts_enabled?"<span class='enabled'>enabled</span>":"<span class='disabled'>disabled</span>";
+        $result.="<p>Payouts: $payouts_enabled_value</p>\n";
+
+        // API enabled
+        $api_enabled=get_variable("api_enabled");
+        $api_enabled_value=$api_enabled?"<span class='enabled'>enabled</span>":"<span class='disabled'>disabled</span>";
+        $result.="<p>API: $api_enabled_value</p>\n";
 
         // Client state
-        $client_state=get_variable("client_state");
-        $result.="<p>Client state: $client_state</p>\n";
-
+        $client_last_update=get_variable("client_last_update");
+        $last_update_interval=date("U")-$client_last_update;
+        if($last_update_interval>0 && $last_update_interval<300) {
+                $result.="<p>Client state: <span class='enabled'>on</span></p>\n";
+        } else {
+                $minutes=floor($last_update_interval/60);
+                if($minutes>120) {
+                        $hours=floor($last_update_interval/3600);
+                        $off_time="$hours hours";
+                } else {
+                        $off_time="$minutes minutes";
+                }
+                $result.="<p>Client state: <span class='disabled'>off ($off_time)</span></p>\n";
+        }
         return $result;
 }
 
@@ -389,8 +406,8 @@ function html_user_settings($user_uid,$token) {
         // Password options
         //$result.="<h3>Password</h3>\n";
         $result.="<p>Password (required to change settings) <input type=password name=password></p>";
-        $result.="<p>New password (if you want to change password) <input type=password name=new_password_1></p>";
-        $result.="<p>New password one more time <input type=password name=new_password_2></p>";
+        $result.="<p>New password (if you want to change password) <input type=password name=new_password1></p>";
+        $result.="<p>New password one more time <input type=password name=new_password2></p>";
 
         // Submit button
         $result.="<p><input type=submit value='Apply'></p>\n";
@@ -425,9 +442,25 @@ function html_admin_settings($user_uid,$token) {
         $info_html=html_escape($info);
         $result.="<textarea name=info rows=10 cols=50>$info_html</textarea>";
 
+        $global_message=get_variable("global_message");
+        $global_message_html=html_escape($global_message);
+        $result.="<p>Global message: <input type=text size=60 name=global_message value='$global_message_html'></p>\n";
+
         // Submit button
         $result.="<p><input type=submit value='Apply'></p>\n";
         $result.="</form>\n";
+
+        return $result;
+}
+
+// Global message
+function html_message_global() {
+        $result="";
+
+        $global_message=get_variable("global_message");
+        if($global_message!='') {
+                $result.="<div class='message_global'>$global_message</div>";
+        }
 
         return $result;
 }
