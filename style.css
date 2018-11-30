@@ -74,4 +74,22 @@
 .message {
         border: 1px solid #888;
         background-color: #FF8;
+        display: block;
+}
+
+.message_global {
+        border: 1px solid #888;
+        background-color: #FF8;
+        display: block;
+}
+
+/* Enabled and disabled colors */
+.enabled {
+        color: green;
+        font-weight: bold;
+}
+
+.disabled {
+        color: red;
+        font-weight: bold;
 }
