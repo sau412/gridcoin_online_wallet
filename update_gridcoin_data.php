@@ -76,8 +76,14 @@ foreach($transactions_array as $transaction_data) {
         if($user_uid) {
                 //$exists=db_query_to_variable("SELECT 1 FROM `transactions` WHERE `tx_id`='$tx_id_escaped'");
                 echo "Transaction $tx_id address $address amount $amount status $status user_uid $user_uid\n";
-                db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`,`tx_id`) VALUES ('$user_uid','$amount_escaped','$address_escaped','$status','$tx_id_escaped')
-ON DUPLICATE KEY UPDATE `status`=VALUES(`status`)");
+                $user_uid_escaped=db_escape($user_uid);
+                $tx_uid=db_query_to_variable("SELECT `uid` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
+                if($tx_uid) {
+                        $tx_uid_escaped=db_escape($tx_uid);
+                        db_query("UPDATE `transactions` SET `status`='$status' WHERE `uid`='$tx_uid_escaped'");
+                } else {
+                        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`,`tx_id`) VALUES ('$user_uid','$amount_escaped','$address_escaped','$status','$tx_id_escaped')");
+                }
                 update_user_balance($user_uid);
         }
 }
