@@ -30,59 +30,26 @@ switch($method) {
         // Get balance
         case 'get_balance':
                 $balance=get_user_balance($user_uid);
-                echo $balance;
+                echo json_encode(array("balance"=>$balance));
                 break;
         // Get current_price in BTC
         case 'get_price_in_btc':
-                $price=get_variable("btc_per_grc");
-                echo "$price";
+                $btc_per_grc=get_variable("btc_per_grc");
+                echo json_encode(array("btc_per_grc"=>$btc_per_grc));
                 break;
         // Get current_price in USD
         case 'get_price_in_usd':
-                $price=get_variable("btc_per_usd");
-                echo "$price";
-                break;
-        // Get current_price in RUB
-        case 'get_price_in_rub':
-                $price=get_variable("rub_per_grc");
-                echo "$price";
-                break;
-        // Get current_price in LTC
-        case 'get_price_in_ltc':
-                $price=get_variable("ltc_per_grc");
-                echo "$price";
-                break;
-        // Get current_price in XRP
-        case 'get_price_in_XRP':
-                $price=get_variable("xrp_per_grc");
-                echo "$price";
-                break;
-        // Get current_price in ETH
-        case 'get_price_in_eth':
-                $price=get_variable("eth_per_grc");
-                echo "$price";
-                break;
-        // Get current_price in XLM
-        case 'get_price_in_xlm':
-                $price=get_variable("xlm_per_grc");
-                echo "$price";
+                $usd_per_grc=get_variable("usd_per_grc");
+                echo json_encode(array("usd_per_grc"=>$usd_per_grc));
                 break;
         // Get all prices
         case 'get_prices_all':
-                $price=get_variable("btc_per_grc");
-                echo "btc_per_grc;$price;\n";
-                $price=get_variable("usd_per_grc");
-                echo "usd_per_grc;$price;\n";
-                $price=get_variable("rub_per_grc");
-                echo "rub_per_grc;$price;\n";
-                $price=get_variable("ltc_per_grc");
-                echo "ltc_per_grc;$price;\n";
-                $price=get_variable("xrp_per_grc");
-                echo "xrp_per_grc;$price;\n";
-                $price=get_variable("eth_per_grc");
-                echo "eth_per_grc;$price;\n";
-                $price=get_variable("xlm_per_grc");
-                echo "xlm_per_grc;$price;\n";
+                $btc_per_grc=get_variable("btc_per_grc");
+                $usd_per_grc=get_variable("usd_per_grc");
+                echo json_encode(array(
+                        "btc_per_usd"=>$btc_per_grc,
+                        "usd_per_grc"=>$usd_per_grc
+                ));
                 break;
 
         // == Receiving addresses methods ==
@@ -90,12 +57,7 @@ switch($method) {
         case 'get_all_receiving_addresses':
                 $user_uid_escaped=db_escape($user_uid);
                 $payout_addresses=db_query_to_array("SELECT `uid`,`address`,`received` FROM `wallets` WHERE `user_uid`='$user_uid_escaped'");
-                foreach($payout_addresses as $address_data) {
-                        $uid=$address_data['uid'];
-                        $address=$address_data['address'];
-                        $received=$address_data['received'];
-                        echo "$uid;$address;$received;\n";
-                }
+                echo json_encode($payout_addresses);
                 break;
         // Get specific receiving address
         case 'get_receiving_address_by_uid':
@@ -104,18 +66,14 @@ switch($method) {
 
                 $address_uid_escaped=db_escape($address_uid);
                 $user_uid_escaped=db_escape($user_uid);
-                $payout_addresses=db_query_to_array("SELECT `address`,`received` FROM `wallets` WHERE `user_uid`='$user_uid_escaped' AND `uid`='$address_uid'");
-
-                foreach($payout_addresses as $address_data) {
-                        $address=$address_data['address'];
-                        $received=$address_data['received'];
-                        echo "$address;$received;\n";
-                }
+                $payout_addresses=db_query_to_array("SELECT `uid`,`address`,`received` FROM `wallets` WHERE `user_uid`='$user_uid_escaped' AND `uid`='$address_uid'");
+                $payout_address_single=array_pop($payout_addresses);
+                echo json_encode($payout_address_single);
                 break;
         // Query new receiving address
         case 'new_receiving_address':
                 $requiest_uid=user_create_new_address($user_uid);
-                echo $requiest_uid;
+                echo json_encode(array("uid"=>$requiest_uid));
                 break;
 
         // == Transaction methods ==
@@ -123,16 +81,7 @@ switch($method) {
         case 'get_all_transactions':
                 $user_uid_escaped=db_escape($user_uid);
                 $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped'");
-
-                foreach($transactions_array as $transaction_data) {
-                        $uid=$transaction_data['uid'];
-                        $amount=$transaction_data['amount'];
-                        $address=$transaction_data['address'];
-                        $status=$transaction_data['status'];
-                        $tx_id=$transaction_data['tx_id'];
-                        $timestamp=$transaction_data['timestamp'];
-                        echo "$uid;$amount;$address;$status;$tx_id;$timestamp;\n";
-                }
+                echo json_encode($transactions_array);
                 break;
         // Get specific transaction
         case 'get_transaction_by_uid':
@@ -141,15 +90,8 @@ switch($method) {
                 $user_uid_escaped=db_escape($user_uid);
                 $transaction_uid_escaped=db_escape($transaction_uid);
                 $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `uid`='$transaction_uid_escaped'");
-                foreach($transactions_array as $transaction_data) {
-                        $uid=$transaction_data['uid'];
-                        $amount=$transaction_data['amount'];
-                        $address=$transaction_data['address'];
-                        $status=$transaction_data['status'];
-                        $tx_id=$transaction_data['tx_id'];
-                        $timestamp=$transaction_data['timestamp'];
-                        echo "$uid;$amount;$address;$status;$tx_id;$timestamp;\n";
-                }
+                $transaction_single=array_pop($transactions_array);
+                echo json_encode($transaction_single);
                 break;
         // Send specific amount to address
         case 'send':
@@ -162,12 +104,12 @@ switch($method) {
 
                 $transaction_uid=user_send($user_uid,$amount,$address);
                 if($transaction_uid==FALSE) die("Sending error");
-                echo $transaction_uid;
+                echo json_encode(array("uid"=>$transaction_uid));
                 break;
 
         // Unknown method
         default:
-                echo "Unknown method";
+                echo json_encode(array("error"=>"Unknown method"));
                 break;
 }
 ?>
