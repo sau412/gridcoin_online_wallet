@@ -76,7 +76,8 @@ if(isset($action)) {
                 $payouts_enabled=stripslashes($_POST['payouts_enabled']);
                 $api_enabled=stripslashes($_POST['api_enabled']);
                 $info=stripslashes($_POST['info']);
-                $message=admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info);
+                $global_message=stripslashes($_POST['global_message']);
+                $message=admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info,$global_message);
         }
         if(isset($message) && $message!='') setcookie("message",$message);
         header("Location: ./");
@@ -151,6 +152,7 @@ if(isset($_COOKIE['message'])) {
         $message="";
 }
 echo html_page_begin($wallet_name);
+echo html_message_global();
 if($user_uid) {
         echo html_logout_form($user_uid,$token);
 }
