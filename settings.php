@@ -37,9 +37,10 @@ $recaptcha_public_key="";
 $settings_api_enabled=TRUE;
 $settings_payouts_enabled=TRUE;
 $settings_login_enabled=TRUE;
+$default_language="en";
 
+// Gridcoin URLs
 $address_url="https://www.gridcoinstats.eu/address/";
 $tx_url="https://www.gridcoinstats.eu/tx/";
 $block_url="https://www.gridcoinstats.eu/block/";
-
 ?>
