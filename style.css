@@ -1,3 +1,7 @@
+html {
+        font-family: sans-serif;
+}
+
 /* Popup QR from https://www.w3schools.com/css/css_tooltip.asp */
 
 .url_with_qr_container {
@@ -92,4 +96,8 @@
 .disabled {
         color: red;
         font-weight: bold;
+}
+
+.lang_selector {
+        float: right;
 }
