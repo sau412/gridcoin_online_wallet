@@ -8,7 +8,9 @@ require_once("email.php");
 
 db_connect();
 
-$current_language=lang_load("en");
+if(isset($_COOKIE['lang'])) $lang=$_COOKIE['lang'];
+else $lang=$default_language;
+$current_language=lang_load($lang);
 
 $session=get_session();
 $user_uid=get_user_uid_by_session($session);
@@ -78,6 +80,10 @@ if(isset($action)) {
                 $info=stripslashes($_POST['info']);
                 $global_message=stripslashes($_POST['global_message']);
                 $message=admin_change_settings($login_enabled,$payouts_enabled,$api_enabled,$info,$global_message);
+        } else if($action=='change_lang') {
+                $lang=stripslashes($_POST['lang']);
+                setcookie('lang',$lang,time()+86400*30);
+                $message='';
         }
         if(isset($message) && $message!='') setcookie("message",$message);
         header("Location: ./");
@@ -151,7 +157,7 @@ if(isset($_COOKIE['message'])) {
 } else {
         $message="";
 }
-echo html_page_begin($wallet_name);
+echo html_page_begin($wallet_name,$token);
 echo html_message_global();
 if($user_uid) {
         echo html_logout_form($user_uid,$token);
