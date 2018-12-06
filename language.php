@@ -239,7 +239,7 @@ $json_language=<<<_END
 "send_amount":{
         "en":"Amount:",
         "ru":"Количество:",
-        "fr":"Montant"
+        "fr":"Montant:"
         },
 "send_submit":{
         "en":"Send",
@@ -357,9 +357,9 @@ $json_language=<<<_END
         "fr":"erreur d'adresse"
         },
 "client_state_header":{
-        "en":"Client state",
+        "en":"Client state:",
         "ru":"Состояние клиента:",
-        "fr":"Statut du client"
+        "fr":"Statut du client:"
         },
 "client_state_current_block":{
         "en":"Current block:",
@@ -443,8 +443,8 @@ $json_language=<<<_END
         },
 "settings_api_state":{
         "en":"API state:",
-        "ru":"состояние API",
-        "fr":"statut API"
+        "ru":"состояние API:",
+        "fr":"statut API:"
         },
 "settings_yes":{
         "en":"yes",
@@ -464,12 +464,12 @@ $json_language=<<<_END
 "settings_api_key":{
         "en":"API key:",
         "ru":"ключ API:",
-        "fr":"clé API"
+        "fr":"clé API:"
         },
 "settings_withdraw_address":{
         "en":"Withdraw address:",
         "ru":"Адрес для вывода:",
-        "fr":"Adresse de retrait."
+        "fr":"Adresse de retrait:"
         },
 "settings_password":{
         "en":"Password (required to change settings):",
@@ -549,22 +549,22 @@ $json_language=<<<_END
 "wallet_settings_login_state":{
         "en":"Login/register state:",
         "ru":"Состояние входа и регистрации:",
-        "fr":"Statut du login/mot de passe"
+        "fr":"Statut du login/mot de passe:"
         },
 "wallet_settings_payouts_state":{
         "en":"payouts state:",
         "ru":"состояние выплат:",
-        "fr":"statut des paiements"
+        "fr":"statut des paiements:"
         },
 "wallet_settings_api_state":{
         "en":"API state:",
         "ru":"состояние API:",
-        "fr":"statut de l'API"
+        "fr":"statut de l'API:"
         },
 "wallet_settings_global_message":{
         "en":"Global message:",
         "ru":"Глобальное сообщение:",
-        "fr":"Message global"
+        "fr":"Message global:"
         },
 "wallet_settings_info":{
         "en":"Info block:",
