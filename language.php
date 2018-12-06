@@ -13,7 +13,7 @@ $json_language=<<<_END
         },
 "register_failed_invalid_password":{
         "en":"Register failed. Invalid password.",
-        "ru":"Ошбика при регистрации: неправильный пароль.",
+        "ru":"Ошибка при регистрации: неправильный пароль.",
         "fr":"Echec de l'inscription. Mot de passe invalide."
         },
 "register_failed_invalid_login":{
