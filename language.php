@@ -608,7 +608,7 @@ function lang_select_form($token) {
 <option>language</option>
 <option value='en'>English</option>
 <option value='ru'>Русский</option>
-<option value='fr'>French</option>
+<option value='fr'>En français</option>
 </select>
 </form>
 _END;
