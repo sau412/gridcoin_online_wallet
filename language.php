@@ -229,7 +229,7 @@ $json_language=<<<_END
 "dashboard_balance":{
         "en":"Balance:",
         "ru":"Баланс:",
-        "fr":"Solde"
+        "fr":"Solde:"
         },
 "send_address":{
         "en":"Address:",
