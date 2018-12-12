@@ -25,23 +25,31 @@ if(isset($action)) {
         if($received_token!=$token) die("Wrong token");
 
         if($action=='login') {
-                $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
-                if(recaptcha_check($recaptcha_response)) {
-                        $login=stripslashes($_POST['login']);
-                        $password=stripslashes($_POST['password']);
-                        $message=user_login($session,$login,$password);
+                if(isset($_POST['g-recaptcha-response'])) {
+                        $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
+                        if(recaptcha_check($recaptcha_response)) {
+                                $login=stripslashes($_POST['login']);
+                                $password=stripslashes($_POST['password']);
+                                $message=user_login($session,$login,$password);
+                        } else {
+                                $message="login_failed_invalid_captcha";
+                        }
                 } else {
                         $message="login_failed_invalid_captcha";
                 }
         } else if($action=='register') {
-                $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
-                if(recaptcha_check($recaptcha_response)) {
-                        $login=stripslashes($_POST['login']);
-                        $mail=stripslashes($_POST['mail']);
-                        $password1=stripslashes($_POST['password1']);
-                        $password2=stripslashes($_POST['password2']);
-                        $withdraw_address=stripslashes($_POST['withdraw_address']);
-                        $message=user_register($session,$mail,$login,$password1,$password2,$withdraw_address);
+                if(isset($_POST['g-recaptcha-response'])) {
+                        $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
+                        if(recaptcha_check($recaptcha_response)) {
+                                $login=stripslashes($_POST['login']);
+                                $mail=stripslashes($_POST['mail']);
+                                $password1=stripslashes($_POST['password1']);
+                                $password2=stripslashes($_POST['password2']);
+                                $withdraw_address=stripslashes($_POST['withdraw_address']);
+                                $message=user_register($session,$mail,$login,$password1,$password2,$withdraw_address);
+                        } else {
+                                $message="register_failed_invalid_captcha";
+                        }
                 } else {
                         $message="register_failed_invalid_captcha";
                 }
