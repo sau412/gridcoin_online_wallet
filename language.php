@@ -164,7 +164,7 @@ $json_language=<<<_END
 "register_withdraw":{
         "en":"Withdraw address:",
         "ru":"Адрес для вывода:",
-        "fr":"Adress de retrait:"
+        "fr":"Adresse de retrait:"
         },
 "register_submit":{
         "en":"Register",
@@ -234,7 +234,7 @@ $json_language=<<<_END
 "send_address":{
         "en":"Address:",
         "ru":"Адрес:",
-        "fr":"Adresse"
+        "fr":"Adresse:"
         },
 "send_amount":{
         "en":"Amount:",
@@ -279,7 +279,7 @@ $json_language=<<<_END
 "receive_header":{
         "en":"Receiving addresses",
         "ru":"Адреса для получения",
-        "fr":"Adresse de réception"
+        "fr":"Adresses de réception"
         },
 "receive_generating":{
         "en":"generating...",
