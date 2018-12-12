@@ -3,6 +3,7 @@ require_once("settings.php");
 require_once("db.php");
 require_once("core.php");
 require_once("gridcoin.php");
+require_once("email.php");
 
 db_connect();
 
@@ -62,6 +63,8 @@ foreach($transactions_array as $transaction_data) {
         $amount_escaped=db_escape($amount);
         $address_escaped=db_escape($address);
         $tx_id_escaped=db_escape($tx_id);
+        $confirmations_escpaed=db_escape($confirmations);
+
         if($category=="receive") {
                 if($confirmations>=10) $status="received";
                 else $status="pending";
@@ -80,9 +83,13 @@ foreach($transactions_array as $transaction_data) {
                 $tx_uid=db_query_to_variable("SELECT `uid` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
                 if($tx_uid) {
                         $tx_uid_escaped=db_escape($tx_uid);
-                        db_query("UPDATE `transactions` SET `status`='$status' WHERE `uid`='$tx_uid_escaped'");
+                        $base_status=db_query_to_variable("SELECT `status` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
+                        if($base_status=='pending' && $status=='received') {
+                                notify_user($user_uid,"Received $amount $currency_short","TX ID: $tx_id\n");
+                        }
+                        db_query("UPDATE `transactions` SET `status`='$status',`confirmations`='$confirmations_escaped' WHERE `uid`='$tx_uid_escaped'");
                 } else {
-                        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`,`tx_id`) VALUES ('$user_uid','$amount_escaped','$address_escaped','$status','$tx_id_escaped')");
+                        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`) VALUES ('$user_uid','$amount_escaped','$address_escaped','$status','$tx_id_escaped','$confirmations_escaped')");
                 }
                 update_user_balance($user_uid);
         }
