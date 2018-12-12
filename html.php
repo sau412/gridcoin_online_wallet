@@ -272,7 +272,7 @@ function html_transactions($user_uid,$token,$limit=10) {
                         case 'sent': $status=lang_message("transactions_table_status_sent"); break;
                         case 'received': $status=lang_message("transactions_table_status_received"); break;
                         case 'processing': $status=lang_message("transactions_table_status_processing"); break;
-                        case 'pending': $status=lang_message("transactions_table_status_pending")." ($confirmations/$wallet_sending_confirmations)"; break;
+                        case 'pending': $status=lang_message("transactions_table_status_pending")." ($confirmations/$wallet_receive_confirmations)"; break;
                         case 'sending error': $status=lang_message("transactions_table_status_sending_error"); break;
                         case 'address error': $status=lang_message("transactions_table_status_address_error"); break;
                 }
