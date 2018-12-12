@@ -247,20 +247,23 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
 // Transactions
 function html_transactions($user_uid,$token,$limit=10) {
         global $currency_short;
+        global $wallet_receive_confirmations;
 
         $result="";
 
         // Transactions
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
-        $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
+        $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
         $result.="<table class='table_horizontal'>\n";
-        $result.=lang_parser("<tr><th>%transactions_table_header_address%</th><th>%transactions_table_header_amount% $currency_short</th><th>%transactions_table_header_status%</th>");
+        $result.=lang_parser("<tr><th>%transactions_table_header_address%</th><th>%transactions_table_header_amount% $currency_short</th>");
+        $result.=lang_parser("<th>%transactions_table_header_status%</th>");
         $result.=lang_parser("<th>%transactions_table_header_tx_id%</th><th>%transactions_table_header_timestamp%</th></tr>");
         foreach($transactions_data_array as $transactions_data) {
                 $address=$transactions_data['address'];
                 $amount=$transactions_data['amount'];
                 $status=$transactions_data['status'];
+                $confirmations=$transactions_data['confirmations'];
                 $tx_id=$transactions_data['tx_id'];
                 $timestamp=$transactions_data['timestamp'];
                 $amount=round($amount,8);
@@ -269,7 +272,7 @@ function html_transactions($user_uid,$token,$limit=10) {
                         case 'sent': $status=lang_message("transactions_table_status_sent"); break;
                         case 'received': $status=lang_message("transactions_table_status_received"); break;
                         case 'processing': $status=lang_message("transactions_table_status_processing"); break;
-                        case 'pending': $status=lang_message("transactions_table_status_pending"); break;
+                        case 'pending': $status=lang_message("transactions_table_status_pending")." ($confirmations/$wallet_sending_confirmations)"; break;
                         case 'sending error': $status=lang_message("transactions_table_status_sending_error"); break;
                         case 'address error': $status=lang_message("transactions_table_status_address_error"); break;
                 }
