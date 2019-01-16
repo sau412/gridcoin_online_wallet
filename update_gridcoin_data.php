@@ -63,10 +63,10 @@ foreach($transactions_array as $transaction_data) {
         $amount_escaped=db_escape($amount);
         $address_escaped=db_escape($address);
         $tx_id_escaped=db_escape($tx_id);
-        $confirmations_escpaed=db_escape($confirmations);
+        $confirmations_escaped=db_escape($confirmations);
 
         if($category=="receive") {
-                if($confirmations>=10) $status="received";
+                if($confirmations>=$wallet_receive_confirmations) $status="received";
                 else $status="pending";
         } else {
                 // Interest transactions
@@ -85,6 +85,7 @@ foreach($transactions_array as $transaction_data) {
                         $tx_uid_escaped=db_escape($tx_uid);
                         $base_status=db_query_to_variable("SELECT `status` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
                         if($base_status=='pending' && $status=='received') {
+                                write_log("Received $amount $currency_short TX ID $tx_id",$user_uid);
                                 notify_user($user_uid,"Received $amount $currency_short","TX ID: $tx_id\n");
                         }
                         db_query("UPDATE `transactions` SET `status`='$status',`confirmations`='$confirmations_escaped' WHERE `uid`='$tx_uid_escaped'");
@@ -116,19 +117,21 @@ if(count($transactions_to_send)!=0) {
 
                 $uid_escaped=db_escape($uid);
 
-                if(grc_rpc_validate_address($address)==TRUE) {
+                if(grc_rpc_validate_address($address)===TRUE) {
                         $tx_id=grc_rpc_send($address,$amount);
 
                         if($tx_id==NULL || $tx_id==FALSE) {
                                 echo "Sending error to address $address amount $amount\n";
-                                db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid`='$uid_escaped'");
+                                //db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid`='$uid_escaped'");
                         } else {
                                 echo "Sent to address $address amount $amount\n";
                                 db_query("UPDATE `transactions` SET `status`='sent',`tx_id`='$tx_id' WHERE `uid`='$uid_escaped'");
                         }
-                } else {
+                } else if(grc_rpc_validate_address($address)===FALSE) {
                         echo "Address error to address $address amount $amount\n";
                         db_query("UPDATE `transactions` SET `tx_id`='',`status`='address error' WHERE `uid`='$uid_escaped'");
+                } else {
+                        echo "Address validation '$address' failed";
                 }
                 update_user_balance($user_uid);
         }
