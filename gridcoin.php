@@ -92,8 +92,9 @@ function grc_rpc_validate_address($grc_address) {
 
         if($data->error == NULL) {
                 if($data->result->isvalid == TRUE) return TRUE;
-                else return FALSE;
-        } else return FALSE;
+                else if($data->result->isvalid == FALSE) return FALSE;
+                else return NULL;
+        } else return NULL;
 }
 
 // Send coins
@@ -147,8 +148,8 @@ function grc_rpc_get_received_by_address($address) {
 }
 
 // Get transactions
-function grc_rpc_get_transactions() {
-        $query='{"id":1,"method":"listtransactions","params":["",100000]}';
+function grc_rpc_get_transactions($count=10000) {
+        $query='{"id":1,"method":"listtransactions","params":["",'.$count.']}';
         $result=grc_rpc_send_query($query);
         $data=json_decode($result);
 //var_dump($data);
