@@ -46,7 +46,8 @@ $json_language=<<<_END
 "login_successfull":{
         "en":"",
         "ru":"",
-        "fr":""
+        "fr":"",
+        "de":""
         },
 "login_failed_invalid_login":{
         "en":"Login failed. Invalid login/password",
@@ -99,7 +100,8 @@ $json_language=<<<_END
 "logout_successfull":{
         "en":"",
         "ru":"",
-        "fr":""
+        "fr":"",
+        "de":""
         },
 "alias_deleted":{
         "en":"Address book entry deleted",
@@ -165,7 +167,7 @@ $json_language=<<<_END
         "en":"Request new receiving address",
         "ru":"Запросить новый адрес",
         "fr":"Demande de nouvelle adresse de réception",
-        "de":"Neue Empfang-Adresse anfordern." 
+        "de":"Neue Empfang-Adresse anfordern."
         },
 "register_login":{
         "en":"Login:",
@@ -177,7 +179,7 @@ $json_language=<<<_END
         "en":"E-mail:",
         "ru":"E-mail:",
         "fr":"E-mail:",
-        "de":"E-mail:",
+        "de":"E-mail:"
         },
 "register_password1":{
         "en":"Password 1:",
@@ -189,7 +191,7 @@ $json_language=<<<_END
         "en":"Password 2:",
         "ru":"Пароль 2:",
         "fr":"Mot de passe 2:",
-        "de":"Passwort 2:",
+        "de":"Passwort 2:"
         },
 "register_withdraw":{
         "en":"Withdraw address:",
@@ -206,7 +208,8 @@ $json_language=<<<_END
 "tab_info":{
         "en":"Info",
         "ru":"Информация",
-        "fr":"Information"
+        "fr":"Information",
+        "de":"Information"
         },
 "tab_dashboard":{
         "en":"Dashboard",
@@ -278,7 +281,7 @@ $json_language=<<<_END
         "en":"Address:",
         "ru":"Адрес:",
         "fr":"Adresse:",
-        "de":"Adresse:",
+        "de":"Adresse:"
         },
 "send_amount":{
         "en":"Amount:",
@@ -680,7 +683,7 @@ $json_language=<<<_END
         "en":"Info block:",
         "ru":"Информационный блок:",
         "fr":"Info bloc:",
-        "de":"Block Info:",
+        "de":"Block Info:"
         },
 "wallet_settings_submit":{
         "en":"Apply",
@@ -689,6 +692,7 @@ $json_language=<<<_END
         "de":"Anwenden"
         }
 }
+
 _END;
 
 function lang_load($lang_code) {
@@ -698,11 +702,11 @@ function lang_load($lang_code) {
         $json_language_parsed=json_decode($json_language);
         $current_language=array();
         foreach($json_language_parsed as $key=>$lang_variable) {
-                if(property_exists($lang_variable,$lang_code)) $current_language[$key]=$lang_variable->$lang_code;
+                if(property_exists($lang_variable,$lang_code))
+                        $current_language[$key]=$lang_variable->$lang_code;
         }
         return $current_language;
 }
-
 function lang_message($code) {
         global $current_language;
         if(isset($current_language[$code])) {
@@ -724,6 +728,7 @@ function lang_select_form($token) {
 <option value='de'>Auf Deutsch</option>
 </select>
 </form>
+
 _END;
 }
 
@@ -731,10 +736,9 @@ function lang_parser($text) {
         while(preg_match('/%([A-Za-z0-9_]+)%/',$text,$matches)) {
                 $replace_from=$matches[0];
                 $replace_to=lang_message($matches[1]);
-//echo "Replacing from '$replace_from' to '$replace_to'<br>";
+                //echo "Replacing from '$replace_from' to '$replace_to'<br>";
                 $text=str_replace($replace_from,$replace_to,$text);
         }
         return $text;
 }
-
 ?>
