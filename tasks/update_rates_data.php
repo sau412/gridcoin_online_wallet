@@ -1,7 +1,7 @@
 <?php
-require_once("settings.php");
-require_once("db.php");
-require_once("core.php");
+require_once("../lib/settings.php");
+require_once("../lib/db.php");
+require_once("../lib/core.php");
 
 db_connect();
 
@@ -15,9 +15,9 @@ curl_setopt($ch,CURLOPT_POST,FALSE);
 curl_setopt($ch,CURLOPT_URL,"https://api.coingecko.com/api/v3/coins/gridcoin-research");
 $result=curl_exec($ch);
 if($result=="") {
-        echo "No GRC price data\n";
-        log_write("No GRC price data");
-        die();
+	echo "No GRC price data\n";
+	log_write("No GRC price data");
+	die();
 }
 $parsed_data=json_decode($result);
 $btc_per_grc_price=(string)$parsed_data->market_data->current_price->btc;

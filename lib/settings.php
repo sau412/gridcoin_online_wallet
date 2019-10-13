@@ -1,8 +1,9 @@
 <?php
 // Settings file
 
-$wallet_name="Gridcoin wallet (testing)";
+$wallet_name="Gridcoin wallet";
 $wallet_domain="";
+$wallet_receive_confirmations=10;
 $currency_short="GRC";
 $currency="Gridcoin";
 
@@ -29,17 +30,13 @@ $grc_rpc_login="";
 $grc_rpc_password="";
 $grc_rpc_wallet_passphrase="";
 
-// ReCAPTHCA
-$recaptcha_private_key="";
-$recaptcha_public_key="";
-
 // Site settings
 $settings_api_enabled=TRUE;
 $settings_payouts_enabled=TRUE;
 $settings_login_enabled=TRUE;
 $default_language="en";
 
-// Gridcoin URLs
+// URLs for links
 $address_url="https://www.gridcoinstats.eu/address/";
 $tx_url="https://www.gridcoinstats.eu/tx/";
 $block_url="https://www.gridcoinstats.eu/block/";

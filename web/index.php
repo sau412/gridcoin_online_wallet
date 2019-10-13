@@ -1,10 +1,11 @@
 <?php
-require_once("settings.php");
-require_once("language.php");
-require_once("db.php");
-require_once("core.php");
-require_once("html.php");
-require_once("email.php");
+require_once("../lib/settings.php");
+require_once("../lib/language.php");
+require_once("../lib/db.php");
+require_once("../lib/core.php");
+require_once("../lib/html.php");
+require_once("../lib/email.php");
+require_once("../lib/captcha.php");
 
 db_connect();
 
@@ -16,6 +17,12 @@ $session=get_session();
 $user_uid=get_user_uid_by_session($session);
 $token=get_user_token_by_session($session);
 
+// Captcha
+if(isset($_GET['captcha'])) {
+        captcha_show($session);
+        die();
+}
+
 if(isset($_POST['action'])) $action=stripslashes($_POST['action']);
 else if(isset($_GET['action'])) $action=stripslashes($_GET['action']);
 
@@ -25,34 +32,28 @@ if(isset($action)) {
         if($received_token!=$token) die("Wrong token");
 
         if($action=='login') {
-                if(isset($_POST['g-recaptcha-response'])) {
-                        $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
-                        if(recaptcha_check($recaptcha_response)) {
-                                $login=stripslashes($_POST['login']);
-                                $password=stripslashes($_POST['password']);
-                                $message=user_login($session,$login,$password);
-                        } else {
-                                $message="login_failed_invalid_captcha";
-                        }
+                $captcha_code=stripslashes($_POST['captcha_code']);
+                if(captcha_check($session,$captcha_code)) {
+                        $login=stripslashes($_POST['login']);
+                        $password=stripslashes($_POST['password']);
+                        $message=user_login($session,$login,$password);
                 } else {
                         $message="login_failed_invalid_captcha";
                 }
+                captcha_regenerate($session);
         } else if($action=='register') {
-                if(isset($_POST['g-recaptcha-response'])) {
-                        $recaptcha_response=stripslashes($_POST['g-recaptcha-response']);
-                        if(recaptcha_check($recaptcha_response)) {
-                                $login=stripslashes($_POST['login']);
-                                $mail=stripslashes($_POST['mail']);
-                                $password1=stripslashes($_POST['password1']);
-                                $password2=stripslashes($_POST['password2']);
-                                $withdraw_address=stripslashes($_POST['withdraw_address']);
-                                $message=user_register($session,$mail,$login,$password1,$password2,$withdraw_address);
-                        } else {
-                                $message="register_failed_invalid_captcha";
-                        }
+                $captcha_code=stripslashes($_POST['captcha_code']);
+                if(captcha_check($session,$captcha_code)) {
+                        $login=stripslashes($_POST['login']);
+                        $mail=stripslashes($_POST['mail']);
+                        $password1=stripslashes($_POST['password1']);
+                        $password2=stripslashes($_POST['password2']);
+                        $withdraw_address=stripslashes($_POST['withdraw_address']);
+                        $message=user_register($session,$mail,$login,$password1,$password2,$withdraw_address);
                 } else {
                         $message="register_failed_invalid_captcha";
                 }
+                captcha_regenerate($session);
         } else if($action=='logout') {
                 user_logout($session);
                 $message="logout_successfull";

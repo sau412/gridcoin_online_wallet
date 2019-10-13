@@ -51,6 +51,7 @@ _END;
 function html_login_form($token) {
         global $recaptcha_public_key;
         $login_submit=lang_message("login_submit");
+        $captcha=html_captcha();
         $result=<<<_END
 <h2>Login</h2>
 <form name=login method=post>
@@ -58,8 +59,7 @@ function html_login_form($token) {
 <input type=hidden name=token value='$token'>
 <p>%login_login% <input type=text name=login></p>
 <p>%login_password% <input type=password name=password></p>
-<script src='https://www.google.com/recaptcha/api.js'></script>
-<div class="g-recaptcha" data-sitekey="$recaptcha_public_key"></div>
+$captcha
 <p><input type=submit value='%login_submit%'></p>
 </form>
 
@@ -90,19 +90,19 @@ _END;
 
 function html_register_form($token) {
         global $recaptcha_public_key;
+        $captcha=html_captcha();
         $result=<<<_END
 <h2>Register</h2>
 <form name=register method=post>
 <input type=hidden name=action value='register'>
 <input type=hidden name=token value='$token'>
 <p>%register_login% <input type=text name=login></p>
-<p>%register_email% <input type=text name=mail></p>
+<p>%register_mail% <input type=text name=mail></p>
 <p>%register_password1% <input type=password name=password1></p>
-<p>%register_passowrd2% <input type=password name=password2></p>
+<p>%register_password2% <input type=password name=password2></p>
 <p>%register_withdraw% <input type=text name=withdraw_address></p>
-<script src='https://www.google.com/recaptcha/api.js'></script>
-<div class="g-recaptcha" data-sitekey="$recaptcha_public_key"></div>
-<p><input type=submit value='%register_submit'></p>
+$captcha
+<p><input type=submit value='%register_submit%'></p>
 </form>
 
 _END;
@@ -231,7 +231,7 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
         foreach($receiving_addresses_data_array as $receiving_addresses_data) {
                 $address=$receiving_addresses_data['address'];
                 $received=$receiving_addresses_data['received'];
-                if($address=='') $address_url="<i>%receive_generating%</i>";
+                if($address=='') $address_url=lang_parser("<i>%receive_generating%</i>");
                 else $address_url=html_address_url($address);
                 $result.="<tr><td>$address_url</td><td>$received</td></tr>\n";
         }
@@ -497,15 +497,19 @@ function html_message_global() {
 function html_log_section_admin() {
         $result="";
         $result.=lang_parser("<h2>%log_header%</h2>\n");
-        $data_array=db_query_to_array("SELECT `message`,`timestamp` FROM `log` ORDER BY `timestamp` DESC LIMIT 100");
+        $data_array=db_query_to_array("SELECT u.`login`,l.`message`,l.`timestamp` FROM `log` AS l
+JOIN `users` u ON u.`uid`=l.`user_uid`
+ORDER BY `timestamp` DESC LIMIT 100");
 
         $result.="<table class='table_horizontal'>\n";
-        $result.=lang_parser("<tr><th>%log_table_header_timestamp%</th><th>%log_table_header_message%</th></tr>\n");
+        $result.=lang_parser("<tr><th>%log_table_header_timestamp%</th><th>%log_table_header_login%</th><th>%log_table_header_message%</th></tr>\n");
         foreach($data_array as $row) {
+                $login=$row['login'];
                 $timestamp=$row['timestamp'];
                 $message=$row['message'];
-                $message_html=htmlspecialchars($message);
-                $result.="<tr><td>$timestamp</td><td>$message_html</td></tr>\n";
+                $login_html=html_escape($login);
+                $message_html=html_escape($message);
+                $result.="<tr><td>$timestamp</td><td>$login_html</td><td>$message_html</td></tr>\n";
         }
         $result.="</table>\n";
         return $result;
@@ -520,7 +524,7 @@ function html_address_url($address) {
         $address_begin=substr($address,0,10);
         $address_end=substr($address,-10,10);
         $send_to_link=lang_parser(html_send_to_link($address,"%link_send_to%"));
-        $address_book_link=lang_parser(html_address_book_link($address,"%link_address book%"));
+        $address_book_link=lang_parser(html_address_book_link($address,"%link_address_book%"));
         //$result="<div class='url_with_qr_container'>$address_begin......$address_end<div class='qr'>$address<br><a href='$address_url$address'>explorer</a>, <a href='#'>copy</a>, $send_to_link, $address_book_link<br><img src='qr.php?str=$address'></div></div>";
         $result=lang_parser("<div class='url_with_qr_container'>$address<div class='qr'>$address<br><a href='$address_url$address'>%link_block_explorer%</a>, $send_to_link, $address_book_link<br><img src='qr.php?str=$address'></div></div>");
         return $result;
@@ -562,6 +566,14 @@ function html_info() {
         $result='';
         $result.=lang_parser("<h2>%info_header%</h2>\n");
         $result.=get_variable("info");
+        return $result;
+}
+
+// Show captcha
+function html_captcha() {
+        $result=<<<_END
+<p><img src='?captcha'><br>Code from image above: <input type=text name=captcha_code></p>
+_END;
         return $result;
 }
 
