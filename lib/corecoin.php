@@ -153,10 +153,15 @@ function coin_rpc_get_transactions($count=1000) {
         $query='{"id":1,"method":"listtransactions","params":["",'.$count.']}';
         $result=coin_rpc_send_query($query);
         $data=json_decode($result);
-//var_dump($data);
-//      foreach($data->result as $key => $val) if($key=="") echo "$key => $val\n";
         if($data->error == NULL) return $data->result;
-        else return FALSE;
+        else {
+		// Bitcoin wallet requires * instead of empty string
+	        $query='{"id":1,"method":"listtransactions","params":["*",'.$count.']}';
+	        $result=coin_rpc_send_query($query);
+	        $data=json_decode($result);
+	        if($data->error == NULL) return $data->result;
+	        else return FALSE;
+	}
 }
 
 ?>
