@@ -33,28 +33,6 @@ switch($method) {
                 //write_log("API: balance, result: '$balance'",$user_uid);
                 echo json_encode(array("balance"=>$balance));
                 break;
-        // Get current_price in BTC
-        case 'get_price_in_btc':
-                $btc_per_grc=get_variable("btc_per_grc");
-                //write_log("API: get_price_in_btc, result: '$btc_per_grc'",$user_uid);
-                echo json_encode(array("btc_per_grc"=>$btc_per_grc));
-                break;
-        // Get current_price in USD
-        case 'get_price_in_usd':
-                $usd_per_grc=get_variable("usd_per_grc");
-                //write_log("API: usd_per_grc, result: '$usd_per_grc'",$user_uid);
-                echo json_encode(array("usd_per_grc"=>$usd_per_grc));
-                break;
-        // Get all prices
-        case 'get_prices_all':
-                $btc_per_grc=get_variable("btc_per_grc");
-                $usd_per_grc=get_variable("usd_per_grc");
-                //write_log("API: get_prices_all, result: btc_per_usd '$btc_per_grc', usd_per_grc '$usd_per_grc'",$user_uid);
-                echo json_encode(array(
-                        "btc_per_usd"=>$btc_per_grc,
-                        "usd_per_grc"=>$usd_per_grc
-                ));
-                break;
 
         // == Receiving addresses methods ==
         // Get all receiving addresses

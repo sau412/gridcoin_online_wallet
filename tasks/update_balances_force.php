@@ -2,7 +2,6 @@
 require_once("../lib/settings.php");
 require_once("../lib/db.php");
 require_once("../lib/core.php");
-require_once("../lib/gridcoin.php");
 require_once("../lib/email.php");
 
 db_connect();

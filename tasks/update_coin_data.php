@@ -2,10 +2,10 @@
 require_once("../lib/settings.php");
 require_once("../lib/db.php");
 require_once("../lib/core.php");
-require_once("../lib/gridcoin.php");
+require_once("../lib/corecoin.php");
 require_once("../lib/email.php");
 
-$f=fopen("/tmp/gridcoin_online_wallet_lockfile","w");
+$f=fopen("/tmp/coin_online_wallet_lockfile","w");
 if($f) {
         echo "Checking locks\n";
         if(!flock($f,LOCK_EX|LOCK_NB)) {
@@ -16,7 +16,7 @@ if($f) {
 db_connect();
 
 // Get current block
-$network_block=grc_rpc_get_block_count();
+$network_block=coin_rpc_get_block_count();
 
 if(!isset($network_block) || $network_block==FALSE) {
 	die("Client down\n");
@@ -32,7 +32,7 @@ if(isset($wallet_block) && $wallet_block!=0 && isset($network_block) && $network
 
 if(isset($network_block) && $network_block!=0) {
 	set_variable("current_block",$network_block);
-	$current_block_hash=grc_rpc_get_block_hash($network_block);
+	$current_block_hash=coin_rpc_get_block_hash($network_block);
 	set_variable("current_block_hash",$current_block_hash);
 }
 
@@ -43,7 +43,7 @@ $addresses_array=db_query_to_array("SELECT `uid`,`address` FROM `wallets` WHERE 
 foreach($addresses_array as $address_data) {
 	$uid=$address_data['uid'];
 	$address=$address_data['address'];
-	$address_received=grc_rpc_get_received_by_address($address);
+	$address_received=coin_rpc_get_received_by_address($address);
 	$uid_escaped=db_escape($uid);
 	$address_received_escaped=db_escape($address_received);
 	echo "Address $address received $address_received\n";
@@ -56,7 +56,7 @@ $addresses_array=db_query_to_array("SELECT `uid`,`user_uid` FROM `wallets` WHERE
 
 foreach($addresses_array as $address_data) {
 	$uid=$address_data['uid'];
-	$address=grc_rpc_get_new_address();
+	$address=coin_rpc_get_new_address();
 	$uid_escaped=db_escape($uid);
 	$address_escaped=db_escape($address);
 	echo "New address $address\n";
@@ -65,7 +65,7 @@ foreach($addresses_array as $address_data) {
 
 // Syncronizing transactions
 echo "Synchronizing transactions\n";
-$transactions_array=grc_rpc_get_transactions();
+$transactions_array=coin_rpc_get_transactions();
 
 foreach($transactions_array as $transaction_data) {
 	$amount=$transaction_data->amount;
@@ -116,7 +116,7 @@ $transactions_to_send=db_query_to_array("SELECT `uid`,`user_uid`,`amount`,`addre
 
 if(count($transactions_to_send)!=0) {
 	// Unlock wallet
-	if(grc_rpc_unlock_wallet() == FALSE) {
+	if(coin_rpc_unlock_wallet() == FALSE) {
 		echo "Unlock wallet error\n";
 		write_log("Unlock wallet error");
 		die();
@@ -131,8 +131,8 @@ if(count($transactions_to_send)!=0) {
 
 		$uid_escaped=db_escape($uid);
 
-		if(grc_rpc_validate_address($address)===TRUE) {
-			$tx_id=grc_rpc_send($address,$amount);
+		if(coin_rpc_validate_address($address)===TRUE) {
+			$tx_id=coin_rpc_send($address,$amount);
 
 			if($tx_id==NULL || $tx_id==FALSE) {
 				echo "Sending error to address $address amount $amount\n";
@@ -141,7 +141,7 @@ if(count($transactions_to_send)!=0) {
 				echo "Sent to address $address amount $amount\n";
 				db_query("UPDATE `transactions` SET `status`='sent',`tx_id`='$tx_id' WHERE `uid`='$uid_escaped'");
 			}
-		} else if(grc_rpc_validate_address($address)===FALSE) {
+		} else if(coin_rpc_validate_address($address)===FALSE) {
 			echo "Address error to address $address amount $amount\n";
 			db_query("UPDATE `transactions` SET `tx_id`='',`status`='address error' WHERE `uid`='$uid_escaped'");
 		} else {
@@ -151,7 +151,7 @@ if(count($transactions_to_send)!=0) {
 	}
 
 	// Lock wallet
-	if(grc_rpc_lock_wallet() == FALSE) {
+	if(coin_rpc_lock_wallet() == FALSE) {
 		echo "Lock wallet error\n";
 		write_log("Lock wallet error");
 		die();

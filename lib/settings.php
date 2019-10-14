@@ -24,11 +24,11 @@ $email_reply_to="";
 $email_notify="";
 
 // Gridcoin RPC variables
-$grc_rpc_host="";
-$grc_rpc_port="";
-$grc_rpc_login="";
-$grc_rpc_password="";
-$grc_rpc_wallet_passphrase="";
+$coin_rpc_host="";
+$coin_rpc_port="";
+$coin_rpc_login="";
+$coin_rpc_password="";
+$coin_rpc_wallet_passphrase="";
 
 // Site settings
 $settings_api_enabled=TRUE;
