@@ -5,7 +5,7 @@ require_once("../lib/core.php");
 require_once("../lib/corecoin.php");
 require_once("../lib/email.php");
 
-$f=fopen("/tmp/coin_online_wallet_lockfile","w");
+$f=fopen($lockfile,"w");
 if($f) {
         echo "Checking locks\n";
         if(!flock($f,LOCK_EX|LOCK_NB)) {
