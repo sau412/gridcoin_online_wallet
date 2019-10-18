@@ -162,6 +162,10 @@ if(count($transactions_to_send)!=0) {
 // Update state variable
 set_variable("client_last_update",date("U"));
 
+// Update balance
+$balance=coin_rpc_get_balance();
+set_variable("wallet_balance",$balance);
+
 echo "Done\n";
 
 ?>

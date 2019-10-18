@@ -35,6 +35,7 @@ $settings_api_enabled=TRUE;
 $settings_payouts_enabled=TRUE;
 $settings_login_enabled=TRUE;
 $default_language="en";
+$lockfile="";
 
 // URLs for links
 $address_url="https://www.gridcoinstats.eu/address/";
