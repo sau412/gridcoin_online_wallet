@@ -286,7 +286,8 @@ function update_user_balance($user_uid) {
         $user_uid_escaped=db_escape($user_uid);
         $amount_received=db_query_to_variable("SELECT SUM(`amount`) FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `status` IN('received')");
         $amount_sent=db_query_to_variable("SELECT SUM(`amount`) FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `status` IN ('processing','sent')");
-        $balance=$amount_received-$amount_sent;
+        $amount_fee=db_query_to_variable("SELECT SUM(`fee`) FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `status` IN ('processing','sent')");
+        $balance=$amount_received-$amount_sent-$amount_fee;
         db_query("UPDATE `users` SET `balance`='$balance' WHERE `uid`='$user_uid_escaped'");
 }
 
@@ -303,6 +304,7 @@ function notify_user($user_uid,$subject,$body) {
 // Send
 function user_send($user_uid,$amount,$address) {
         global $currency_short;
+	global $sending_fee;
 
         // Check payouts enabled
         if(get_variable("payouts_enabled")==0) return FALSE;
@@ -321,7 +323,8 @@ function user_send($user_uid,$amount,$address) {
         $user_uid_escaped=db_escape($user_uid);
         $amount_escaped=db_escape($amount);
         $address_escaped=db_escape($address);
-        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`) VALUES ('$user_uid_escaped','$amount_escaped','$address_escaped','processing')");
+	$fee_escaped=db_escape($sending_fee);
+        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`fee`,`address`,`status`) VALUES ('$user_uid_escaped','$amount_escaped','$fee_escaped','$address_escaped','processing')");
         $transaction_uid=mysql_insert_id();
 
         // Adjust user balance
