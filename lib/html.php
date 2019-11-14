@@ -172,13 +172,15 @@ function html_balance_and_send($user_uid,$token) {
 
         $result.="<h2>%dashboard_balance% $balance $currency_short</h2>";
 
+	$sending_fee_formatted=sprintf("%0.8f",$sending_fee);
+
         $result.=<<<_END
 <form name=send method=post>
 <input type=hidden name=action value='send'>
 <input type=hidden name=token value='$token'>
 <p>%send_address% <input type=text size=40 name=address id=send_address></p>
 <p>%send_amount% <input type=text name=amount id=send_amount value=0> $currency_short</p>
-<p><small>%send_fee_label% $sending_fee $currency_short</small></p>
+<p><small>%send_fee_label% $sending_fee_formatted $currency_short</small></p>
 <p><input type=submit value='%send_submit%'></p>
 </form>
 
@@ -256,14 +258,15 @@ function html_transactions($user_uid,$token,$limit=10) {
         // Transactions
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
-        $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
+        $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`fee`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
         $result.="<table class='table_horizontal'>\n";
         $result.=lang_parser("<tr><th>%transactions_table_header_address%</th><th>%transactions_table_header_amount% $currency_short</th>");
-        $result.=lang_parser("<th>%transactions_table_header_status%</th>");
+        $result.=lang_parser("<th>%transactions_table_header_fee%</th><th>%transactions_table_header_status%</th>");
         $result.=lang_parser("<th>%transactions_table_header_tx_id%</th><th>%transactions_table_header_timestamp%</th></tr>");
         foreach($transactions_data_array as $transactions_data) {
                 $address=$transactions_data['address'];
                 $amount=$transactions_data['amount'];
+		$fee=$transactions_data['fee'];
                 $status=$transactions_data['status'];
                 $confirmations=$transactions_data['confirmations'];
                 $tx_id=$transactions_data['tx_id'];
@@ -279,9 +282,11 @@ function html_transactions($user_uid,$token,$limit=10) {
                         case 'address error': $status=lang_message("transactions_table_status_address_error"); break;
                 }
 
+		$fee_formatted=sprintf("%0.8f",$fee);
+
                 $address_url=html_address_url($address);
                 $tx_url=html_tx_url($tx_id);
-                $result.="<tr><td>$address_url</td><td align=right>$amount</td><td>$status</td><td>$tx_url</td><td>$timestamp</td></tr>\n";
+                $result.="<tr><td>$address_url</td><td align=right>$amount</td><td>$fee_formatted</td><td>$status</td><td>$tx_url</td><td>$timestamp</td></tr>\n";
         }
         $result.="</table>\n";
 

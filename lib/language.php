@@ -316,6 +316,11 @@ $json_language=<<<_END
         "ru":"Количество,",
         "fr":"Montant,"
         },
+"transactions_table_header_fee":{
+        "en":"Fee",
+        "ru":"Комиссия",
+        "fr":"Frais"
+        },
 "transactions_table_header_status":{
         "en":"Status",
         "ru":"Состояние",
