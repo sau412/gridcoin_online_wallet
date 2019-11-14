@@ -316,6 +316,7 @@ function user_send($user_uid,$amount,$address) {
         if($address=="") return FALSE;
 
         // Check user balance
+	db_query("LOCK TABLES `transactions` WRITE,`users` WRITE");
         $balance=get_user_balance($user_uid);
         if($balance<$amount) return FALSE;
 
@@ -329,6 +330,7 @@ function user_send($user_uid,$amount,$address) {
 
         // Adjust user balance
         update_user_balance($user_uid);
+	db_query("UNLOCK TABLES");
 
         // Send notifications
         $username=get_username_by_uid($user_uid);
