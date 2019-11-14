@@ -241,6 +241,11 @@ $json_language=<<<_END
         "ru":"Количество:",
         "fr":"Montant:"
         },
+"send_fee_label":{
+	"en":"Sending fee:",
+	"ru":"Комиссия",
+	"fr":"Frais de transaction"
+},
 "send_submit":{
         "en":"Send",
         "ru":"Отправить",

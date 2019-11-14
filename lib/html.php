@@ -164,6 +164,7 @@ function html_wallet_form($user_uid,$token) {
 // Balance
 function html_balance_and_send($user_uid,$token) {
         global $currency_short;
+	global $sending_fee;
 
         $result="";
         $balance=get_user_balance($user_uid);
@@ -177,6 +178,7 @@ function html_balance_and_send($user_uid,$token) {
 <input type=hidden name=token value='$token'>
 <p>%send_address% <input type=text size=40 name=address id=send_address></p>
 <p>%send_amount% <input type=text name=amount id=send_amount value=0> $currency_short</p>
+<p><small>%send_fee_label% $sending_fee $currency_short</small></p>
 <p><input type=submit value='%send_submit%'></p>
 </form>
 
