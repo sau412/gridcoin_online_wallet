@@ -30,6 +30,7 @@ function html_page_end() {
         $result=<<<_END
 <hr width=10%>
 <p>%footer_about%</p>
+<p><img src='https://arikado.xyz/counter/?site=gridcoin_wallet'></p>
 </center>
 <script>
 
