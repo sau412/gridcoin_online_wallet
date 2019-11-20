@@ -6,6 +6,10 @@ $wallet_domain="";
 $wallet_receive_confirmations=10;
 $currency_short="GRC";
 $currency="Gridcoin";
+// For counter
+$project_counter_name="";
+// For logging
+$project_log_name="";
 
 // DB variables
 $db_host="";
