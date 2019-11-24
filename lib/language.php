@@ -117,9 +117,9 @@ $json_language=<<<_END
         "fr":"Nouvelle adresse nécessaire"
         },
 "footer_about":{
-        "en":"Opensource online wallet (<a href='https://github.com/sau412/gridcoin_online_wallet'>github link</a>) by <a href='htps://arikado.xyz/'>sau412</a>.",
-        "ru":"Он-лайн кошелёк с открытым исходным кодом (<a href='https://github.com/sau412/gridcoin_online_wallet'>github</a>). Автор - <a href='htps://arikado.xyz/'>sau412</a>.",
-        "fr":"Portefeuille opensource en ligne (<a href='https://github.com/sau412/gridcoin_online_wallet'>github link</a>) par <a href='htps://arikado.xyz/'>sau412</a>."
+        "en":"Opensource online wallet (<a href='https://github.com/sau412/gridcoin_online_wallet'>github link</a>) by <a href='https://arikado.xyz/'>sau412</a>.",
+        "ru":"Он-лайн кошелёк с открытым исходным кодом (<a href='https://github.com/sau412/gridcoin_online_wallet'>github</a>). Автор - <a href='https://arikado.xyz/'>sau412</a>.",
+        "fr":"Portefeuille opensource en ligne (<a href='https://github.com/sau412/gridcoin_online_wallet'>github link</a>) par <a href='https://arikado.xyz/'>sau412</a>."
         },
 "login_login":{
         "en":"Login:",
