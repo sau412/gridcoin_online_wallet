@@ -70,7 +70,10 @@ function coin_rpc_unlock_wallet() {
 	$data=json_decode($result);
 //var_dump($data);
 	if($data->error == NULL) return TRUE;
+	// Wallet already unlocked
 	else if($data->error->message=='Error: Wallet is already unlocked, use walletlock first if need to change unlock settings.') return TRUE;
+	// Wallet without passphrase
+	else if($data->error->message=='Error: running with an unencrypted wallet, but walletpassphrase was called.') return TRUE;
 	else return FALSE;
 }
 
@@ -95,6 +98,15 @@ function coin_rpc_validate_address($coin_address) {
 		else if($data->result->isvalid == FALSE) return FALSE;
 		else return NULL;
 	} else return NULL;
+}
+
+// Set TX fee
+function coin_rpc_set_tx_fee($fee_amount) {
+	$query='{"id":1,"method":"settxfee","params":['.$fee_amount.']}';
+	$result=coin_rpc_send_query($query);
+	$data=json_decode($result);
+	if($data->error == NULL) return $data->result;
+	else return FALSE;
 }
 
 // Send coins

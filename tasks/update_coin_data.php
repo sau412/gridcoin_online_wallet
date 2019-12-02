@@ -132,6 +132,7 @@ if(count($transactions_to_send)!=0) {
 		$uid_escaped=db_escape($uid);
 
 		if(coin_rpc_validate_address($address)===TRUE) {
+			coin_rpc_set_tx_fee($sending_fee);
 			$tx_id=coin_rpc_send($address,$amount);
 
 			if($tx_id==NULL || $tx_id==FALSE) {
