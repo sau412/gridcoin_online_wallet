@@ -321,7 +321,7 @@ function user_send($user_uid,$amount,$address) {
         // Check user balance
 	db_query("LOCK TABLES `transactions` WRITE,`users` WRITE");
         $balance=get_user_balance($user_uid);
-        if($balance<$amount) return FALSE;
+        if($balance < ($amount + $sending_fee)) return FALSE;
 
         // Add transaction to schedule
         $user_uid_escaped=db_escape($user_uid);
