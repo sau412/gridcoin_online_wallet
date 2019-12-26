@@ -145,6 +145,9 @@ if(isset($_GET['ajax']) && isset($_GET['block'])) {
                 }
         } else {
                 switch($_GET['block']) {
+                        case 'client_state':
+                                echo html_client_state();
+                                break;
                         default:
                         case 'info':
                                 echo html_info();

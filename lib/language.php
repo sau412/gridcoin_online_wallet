@@ -226,6 +226,11 @@ $json_language=<<<_END
         "ru":"Регистрация",
         "fr":"Inscription"
         },
+"tab_client_state":{
+        "en":"Client state",
+        "ru":"Состояние клиента",
+        "fr":"État client"
+        },
 "dashboard_balance":{
         "en":"Balance:",
         "ru":"Баланс:",
