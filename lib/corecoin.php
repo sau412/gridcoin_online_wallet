@@ -113,6 +113,7 @@ function coin_rpc_set_tx_fee($fee_amount) {
 
 // Send coins
 function coin_rpc_send($coin_address,$amount) {
+	$amount = sprintf("%0.8F",$amount);
 	$query='{"id":1,"method":"sendtoaddress","params":["'.$coin_address.'",'.$amount.']}';
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result);
