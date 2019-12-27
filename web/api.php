@@ -27,6 +27,11 @@ $method=$_POST['method'];
 
 // Do action
 switch($method) {
+	// Ping
+	case 'ping':
+		echo "Pong";
+		break;
+
         // Get balance
         case 'get_balance':
                 $balance=get_user_balance($user_uid);
