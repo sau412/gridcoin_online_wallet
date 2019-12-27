@@ -83,6 +83,8 @@ function coin_rpc_lock_wallet() {
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result);
 	if($data->error == NULL) return TRUE;
+	// Wallet without passphrase
+	else if($data->error->message=='Error: running with an unencrypted wallet, but walletlock was called.') return TRUE;
 	else return FALSE;
 }
 
