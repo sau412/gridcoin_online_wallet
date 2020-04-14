@@ -13,6 +13,22 @@ if($f) {
 	}
 }
 
+function update_received_by_address($address) {
+	$address_received = coin_rpc_get_received_by_address($address);
+	echo "Address $address received $address_received\n";
+
+	// Continue if no coins received
+	if($address_received == 0) continue;
+
+	// Continue if value is not changed
+	if($address_received == $received_in_db) continue;
+
+	$address_escaped=db_escape($address);
+	$address_received_escaped=db_escape($address_received);
+	db_query("UPDATE `wallets` SET `received`='$address_received_escaped'
+				WHERE `address`='$address_escaped' AND `received`<'$address_received_escaped'");
+}
+
 db_connect();
 
 // Get current block
