@@ -45,12 +45,13 @@ foreach($addresses_array as $address_data) {
 	$address=$address_data['address'];
 	$address_received=coin_rpc_get_received_by_address($address);
 
+	echo "Address $address received $address_received\n";
+
 	// Continue if no coins received
 	if($address_received == 0) continue;
 
 	$uid_escaped=db_escape($uid);
 	$address_received_escaped=db_escape($address_received);
-	echo "Address $address received $address_received\n";
 	db_query("UPDATE `wallets` SET `received`='$address_received_escaped' WHERE `uid`='$uid_escaped' AND `received`<'$address_received_escaped'");
 }
 
@@ -69,7 +70,22 @@ foreach($addresses_array as $address_data) {
 
 // Syncronizing transactions
 echo "Synchronizing transactions\n";
-$transactions_array=coin_rpc_get_transactions();
+echo "Try 10 transactions...\n";
+$transactions_array=coin_rpc_get_transactions(10);
+
+// Check max confirmations
+$max_confirmations = 0;
+foreach($transactions_array as $transaction_data) {
+	$confirmations = $transaction_data->confirmations;
+	if($confirmations > $max_confirmations) {
+		$max_confirmations = $confirmations;
+	}
+}
+echo "Max confirmations is $max_confirmations\n";
+if($max_confirmations <= $wallet_receive_confirmations) {
+	echo "Max confirmations too small, syncronizing more transactions...\n";
+	$transactions_array=coin_rpc_get_transactions(1000);
+}
 
 foreach($transactions_array as $transaction_data) {
 	$amount=$transaction_data->amount;
