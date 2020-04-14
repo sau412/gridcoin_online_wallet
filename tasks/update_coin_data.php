@@ -18,10 +18,7 @@ function update_received_by_address($address) {
 	echo "Address $address received $address_received\n";
 
 	// Continue if no coins received
-	if($address_received == 0) continue;
-
-	// Continue if value is not changed
-	if($address_received == $received_in_db) continue;
+	if($address_received == 0) return;
 
 	$address_escaped=db_escape($address);
 	$address_received_escaped=db_escape($address_received);
@@ -52,6 +49,7 @@ if(isset($network_block) && $network_block!=0) {
 	set_variable("current_block_hash",$current_block_hash);
 }
 
+/*
 // Get addresses received
 echo "Updating received amounts\n";
 $addresses_array=db_query_to_array("SELECT `uid`,`address`,`received` FROM `wallets` WHERE `address`<>'' AND `address` IS NOT NULL");
@@ -75,6 +73,7 @@ foreach($addresses_array as $address_data) {
 	$address_received_escaped=db_escape($address_received);
 	db_query("UPDATE `wallets` SET `received`='$address_received_escaped' WHERE `uid`='$uid_escaped' AND `received`<'$address_received_escaped'");
 }
+*/
 
 // Generating new addresses
 echo "Generating new addresses\n";
@@ -121,6 +120,7 @@ foreach($transactions_array as $transaction_data) {
 	$confirmations_escaped=db_escape($confirmations);
 
 	if($category=="receive") {
+		update_received_by_address($address);
 		if($confirmations>=$wallet_receive_confirmations) $status="received";
 		else $status="pending";
 	} else {
