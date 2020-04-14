@@ -38,17 +38,22 @@ if(isset($network_block) && $network_block!=0) {
 
 // Get addresses received
 echo "Updating received amounts\n";
-$addresses_array=db_query_to_array("SELECT `uid`,`address` FROM `wallets` WHERE `address`<>'' AND `address` IS NOT NULL");
+$addresses_array=db_query_to_array("SELECT `uid`,`address`,`received` FROM `wallets` WHERE `address`<>'' AND `address` IS NOT NULL");
 
 foreach($addresses_array as $address_data) {
-	$uid=$address_data['uid'];
-	$address=$address_data['address'];
-	$address_received=coin_rpc_get_received_by_address($address);
-
+	$uid = $address_data['uid'];
+	$address = $address_data['address'];
+	$received_in_db = $address_data['received'];
+	
+	$address_received = coin_rpc_get_received_by_address($address);
+	
 	echo "Address $address received $address_received\n";
 
 	// Continue if no coins received
 	if($address_received == 0) continue;
+
+	// Continue if value is not changed
+	if($address_received == $received_in_db) continue;
 
 	$uid_escaped=db_escape($uid);
 	$address_received_escaped=db_escape($address_received);
