@@ -183,10 +183,6 @@ if($message) {
 echo html_tabs($user_uid);
 echo html_loadable_block();
 
-//echo "Session $session\n";
-//echo "User uid '$user_uid'\n";
-//echo "Token $token\n";
-
 echo html_page_end();
 
 ?>
