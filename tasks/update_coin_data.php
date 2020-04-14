@@ -44,6 +44,10 @@ foreach($addresses_array as $address_data) {
 	$uid=$address_data['uid'];
 	$address=$address_data['address'];
 	$address_received=coin_rpc_get_received_by_address($address);
+
+	// Continue if no coins received
+	if($address_received == 0) continue;
+
 	$uid_escaped=db_escape($uid);
 	$address_received_escaped=db_escape($address_received);
 	echo "Address $address received $address_received\n";
