@@ -192,6 +192,8 @@ set_variable("client_last_update",date("U"));
 $balance=coin_rpc_get_balance();
 set_variable("wallet_balance",$balance);
 
+
+echo "DB queries count $db_queries_count\n";
 echo "Done\n";
 
 ?>
