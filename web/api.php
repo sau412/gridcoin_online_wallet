@@ -71,7 +71,7 @@ switch($method) {
         // Get all transactions
         case 'get_all_transactions':
                 $user_uid_escaped=db_escape($user_uid);
-                $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped'");
+                $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped'");
                 //write_log("API: get_all_transactions",$user_uid);
                 echo json_encode($transactions_array);
                 break;
@@ -81,7 +81,7 @@ switch($method) {
                 if(!validate_number($transaction_uid)) die("Wrong transaction uid");
                 $user_uid_escaped=db_escape($user_uid);
                 $transaction_uid_escaped=db_escape($transaction_uid);
-                $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `uid`='$transaction_uid_escaped'");
+                $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `uid`='$transaction_uid_escaped'");
                 $transaction_single=array_pop($transactions_array);
                 //write_log("API: get_transaction_by_uid '$transaction_uid'",$user_uid);
                 echo json_encode($transaction_single);
