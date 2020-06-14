@@ -80,7 +80,7 @@ switch($method) {
         // Get all transactions by address
         case 'get_all_transactions_by_address':
                 $user_uid_escaped=db_escape($user_uid);
-                $address_escaped=db_escape($address);
+                $address_escaped=db_escape($_POST['address']);
                 $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`,`timestamp`
                 										FROM `transactions`
                 										WHERE `user_uid`='$user_uid_escaped' AND `address`='$address_escaped'");
