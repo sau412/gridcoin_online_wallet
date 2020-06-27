@@ -46,4 +46,5 @@ $sending_fee=0;
 $address_url="https://www.gridcoinstats.eu/address/";
 $tx_url="https://www.gridcoinstats.eu/tx/";
 $block_url="https://www.gridcoinstats.eu/block/";
+
 ?>
