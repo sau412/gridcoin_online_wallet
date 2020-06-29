@@ -16,7 +16,7 @@ function email_add($user_uid,$to,$subject,$body) {
 		"body" => $body,
 	];
 	
-	write_log($message, 6);
+	log_write($message, 6);
 	
 	broker_add("mailer", $message);
 }
