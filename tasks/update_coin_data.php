@@ -4,6 +4,8 @@ require_once("../lib/db.php");
 require_once("../lib/core.php");
 require_once("../lib/corecoin.php");
 require_once("../lib/email.php");
+require_once("../lib/broker.php");
+require_once("../lib/logger.php");
 
 $f=fopen($lockfile,"w");
 if($f) {
