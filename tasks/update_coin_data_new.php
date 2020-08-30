@@ -51,6 +51,10 @@ if(isset($network_block) && $network_block!=0) {
 	set_variable("current_block_hash",$current_block_hash);
 }
 
+$received_by_address_array = coin_rpc_list_received_by_address();
+
+var_dump($received_by_address_array);
+die();
 /*
 // Get addresses received
 echo "Updating received amounts\n";
