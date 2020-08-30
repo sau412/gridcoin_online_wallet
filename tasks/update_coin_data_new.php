@@ -49,7 +49,7 @@ function update_transaction($user_uid, $address, $txid) {
     $total_amount_escaped = db_escape($total_amount);
     $exists_txid_uid = db_query_to_variable("SELECT `uid` FROM `transactions`
                                                 WHERE `tx_id` = '$txid_escaped' AND
-                                                        `status` IN ('received', 'pending) AND
+                                                        `status` IN ('received', 'pending') AND
                                                         `user_uid` = '$user_uid_escaped'");
     $status = "pending";
     if($confirmations >= $wallet_receive_confirmations) {
@@ -98,7 +98,6 @@ if(isset($network_block) && $network_block!=0) {
 
 $received_by_address_array = coin_rpc_list_received_by_address();
 
-//var_dump($received_by_address_array);
 foreach($received_by_address_array as $received_by_address) {
     $address = $received_by_address['address'];
     $amount = $received_by_address['amount'];
@@ -117,7 +116,6 @@ foreach($received_by_address_array as $received_by_address) {
         if(!$user_uid) continue;
 
         foreach($txids_array as $txid) {
-            $txid_escaped = db_escape($txid);
             update_transaction($user_uid, $address, $txid);
         }
     }
