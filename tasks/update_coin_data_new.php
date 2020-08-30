@@ -28,6 +28,51 @@ function update_received_by_address($address) {
 				WHERE `address`='$address_escaped' AND `received`<'$address_received_escaped'");
 }
 
+function update_transaction($user_uid, $address, $txid) {
+    global $wallet_receive_confirmations;
+
+    $transaction = coin_rpc_get_single_transaction($txid);
+    $vout_array = $transaction['vout'];
+    $confirmations = $transaction["confirmations"];
+    $total_amount = 0;
+    foreach($vout_array as $vout) {
+        $vout_value = $vout['value'];
+        $vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
+        if($address == $vout_address) {
+            $total_amount += $vout_value;
+        }
+    }
+
+    $address_escaped = db_escape($address);
+    $user_uid_escaped = db_escape($user_uid);
+    $txid_escaped = db_escape($txid);
+    $total_amount_escaped = db_escape($total_amount);
+    $exists_txid_uid = db_query_to_variable("SELECT `uid` FROM `transactions`
+                                                WHERE `tx_id` = '$txid_escaped' AND
+                                                        `status` IN ('received', 'pending) AND
+                                                        `user_uid` = '$user_uid_escaped'");
+    $status = "pending";
+    if($confirmations >= $wallet_receive_confirmations) {
+        $status = "received";
+    }
+    $status_escaped = db_escape($status);
+    $confirmations_escaped = db_escape($confirmations);
+    
+    if($exists_txid_uid) {
+        // Exists transaction
+        $exists_txid_uid_escaped = db_escape($exists_txid_uid);
+
+        db_query("UPDATE `transactions` SET `status` = '$status_escaped', `confirmations` = '$confirmations_escaped'
+                    WHERE `uid` = 'exists_txid_uid_escaped'");
+    }
+    else {
+        // New transaction
+        db_query("INSERT INTO `transactions` (`user_uid`, `amount`, `address`, `status`, `tx_id`, `confirmations`)
+                    VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
+                            '$status_escaped', '$confirmations_escaped')");
+    }
+}
+
 db_connect();
 
 // Get current block
@@ -53,33 +98,32 @@ if(isset($network_block) && $network_block!=0) {
 
 $received_by_address_array = coin_rpc_list_received_by_address();
 
-var_dump($received_by_address_array);
-die();
-/*
-// Get addresses received
-echo "Updating received amounts\n";
-$addresses_array=db_query_to_array("SELECT `uid`,`address`,`received` FROM `wallets` WHERE `address`<>'' AND `address` IS NOT NULL");
+//var_dump($received_by_address_array);
+foreach($received_by_address_array as $received_by_address) {
+    $address = $received_by_address['address'];
+    $amount = $received_by_address['amount'];
+    $txids_array = $received_by_address['txids'];
 
-foreach($addresses_array as $address_data) {
-	$uid = $address_data['uid'];
-	$address = $address_data['address'];
-	$received_in_db = $address_data['received'];
-	
-	$address_received = coin_rpc_get_received_by_address($address);
-	
-	echo "Address $address received $address_received\n";
+    if(!$address) continue;
+    if(!$smount) continue;
 
-	// Continue if no coins received
-	if($address_received == 0) continue;
+    $address_escaped = db_escape($address);
+    $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
+    if($amount > $received) {
+        echo "Something received for $address, syncing transactions\n";
 
-	// Continue if value is not changed
-	if($address_received == $received_in_db) continue;
+        $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
-	$uid_escaped=db_escape($uid);
-	$address_received_escaped=db_escape($address_received);
-	db_query("UPDATE `wallets` SET `received`='$address_received_escaped' WHERE `uid`='$uid_escaped' AND `received`<'$address_received_escaped'");
+        if(!$user_uid) continue;
+
+        foreach($txids_array as $txid) {
+            $txid_escaped = db_escape($txid);
+            update_transaction($user_uid, $address, $txid);
+        }
+    }
 }
-*/
+die();
+
 
 // Generating new addresses
 echo "Generating new addresses\n";

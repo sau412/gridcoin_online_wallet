@@ -47,11 +47,12 @@ function coin_rpc_get_current_superblock_number() {
 	return $data->result->{"Superblock Block Number"};
 }
 
-// Get current superblock
-function coin_rpc_get_transaction($hash) {
-	$query='{"id":1,"method":"gettransaction","params":["'.$hash.'"]}';
+// Get transaction
+function coin_rpc_get_single_transaction($txid) {
+	$query='{"id":1,"method":"gettransaction","params":["'.$txid.'"]}';
 	$result=coin_rpc_send_query($query);
-	return $result;
+	$data=json_decode($result, true);
+	return $data->result;
 }
 
 // Get balance
@@ -184,7 +185,7 @@ function coin_rpc_list_received_by_address() {
 	global $wallet_receive_confirmations;
 	$query='{"id":1,"method":"listreceivedbyaddress","params":['.$wallet_receive_confirmations.']}';
 	$result=coin_rpc_send_query($query);
-	$data=json_decode($result);
+	$data=json_decode($result, true);
 	if($data->error == NULL) return $data->result;
 	else return FALSE;
 }
