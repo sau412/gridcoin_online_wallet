@@ -179,4 +179,14 @@ function coin_rpc_get_transactions($count=1000) {
 	}
 }
 
+// List listreceived by address
+function coin_rpc_list_received_by_address() {
+	global $wallet_receive_confirmations;
+	$query='{"id":1,"method":"listreceivedbyaddress","params":['.$wallet_receive_confirmations.']}';
+	$result=coin_rpc_send_query($query);
+	$data=json_decode($result);
+	if($data->error == NULL) return $data->result;
+	else return FALSE;
+}
+
 ?>
