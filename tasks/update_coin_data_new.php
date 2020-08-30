@@ -62,12 +62,12 @@ function update_transaction($user_uid, $address, $txid) {
         // Exists transaction
         $exists_txid_uid_escaped = db_escape($exists_txid_uid);
 
-        db_query("UPDATE `transactions` SET `status` = '$status_escaped', `confirmations` = '$confirmations_escaped'
+        echo("UPDATE `transactions` SET `status` = '$status_escaped', `confirmations` = '$confirmations_escaped'
                     WHERE `uid` = 'exists_txid_uid_escaped'");
     }
     else {
         // New transaction
-        db_query("INSERT INTO `transactions` (`user_uid`, `amount`, `address`, `status`, `tx_id`, `confirmations`)
+        echo("INSERT INTO `transactions` (`user_uid`, `amount`, `address`, `status`, `tx_id`, `confirmations`)
                     VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
                             '$status_escaped', '$confirmations_escaped')");
     }
@@ -105,7 +105,7 @@ foreach($received_by_address_array as $received_by_address) {
     $txids_array = $received_by_address['txids'];
 
     if(!$address) continue;
-    if(!$smount) continue;
+    if(!$amount) continue;
 
     $address_escaped = db_escape($address);
     $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
