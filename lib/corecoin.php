@@ -52,7 +52,7 @@ function coin_rpc_get_single_transaction($txid) {
 	$query='{"id":1,"method":"gettransaction","params":["'.$txid.'"]}';
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result, true);
-	return $data->result;
+	return $data['result'];
 }
 
 // Get balance
@@ -186,7 +186,7 @@ function coin_rpc_list_received_by_address() {
 	$query='{"id":1,"method":"listreceivedbyaddress","params":['.$wallet_receive_confirmations.']}';
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result, true);
-	if($data->error == NULL) return $data->result;
+	if($data['error'] == NULL) return $data->result;
 	else return FALSE;
 }
 
