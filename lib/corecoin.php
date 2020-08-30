@@ -186,7 +186,7 @@ function coin_rpc_list_received_by_address() {
 	$query='{"id":1,"method":"listreceivedbyaddress","params":['.$wallet_receive_confirmations.']}';
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result, true);
-	if($data['error'] == NULL) return $data->result;
+	if($data['error'] == NULL) return $data['result'];
 	else return FALSE;
 }
 
