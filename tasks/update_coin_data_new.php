@@ -63,7 +63,7 @@ function update_transaction($user_uid, $address, $txid) {
         $exists_txid_uid_escaped = db_escape($exists_txid_uid);
 
         echo("UPDATE `transactions` SET `status` = '$status_escaped', `confirmations` = '$confirmations_escaped'
-                    WHERE `uid` = 'exists_txid_uid_escaped'");
+                    WHERE `uid` = '$exists_txid_uid_escaped'");
     }
     else {
         // New transaction
