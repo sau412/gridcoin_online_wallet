@@ -69,7 +69,7 @@ function update_transaction($user_uid, $address, $txid) {
         // Insert new transaction record
         db_query("INSERT INTO `transactions` (`user_uid`, `amount`, `address`, `status`, `tx_id`, `confirmations`)
                     VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
-                            '$status_escaped', '$confirmations_escaped')");
+                            '$status_escaped', '$txid_escaped', '$confirmations_escaped')");
     }
 
     
