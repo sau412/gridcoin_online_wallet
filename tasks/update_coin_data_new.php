@@ -71,6 +71,8 @@ function update_transaction($user_uid, $address, $txid) {
                     VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
                             '$status_escaped', '$confirmations_escaped')");
     }
+
+    
 }
 
 db_connect();
@@ -109,19 +111,18 @@ foreach($received_by_address_array as $received_by_address) {
     $address_escaped = db_escape($address);
     $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
     if($amount > $received) {
-        echo "Something received for $address, syncing transactions\n";
-
         $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
         if(!$user_uid) continue;
 
+        echo "Something received user $user_uid for $address, syncing transactions\n";
+
         foreach($txids_array as $txid) {
             update_transaction($user_uid, $address, $txid);
+            update_received_by_address($address);
         }
     }
 }
-die();
-
 
 // Generating new addresses
 echo "Generating new addresses\n";
@@ -136,6 +137,7 @@ foreach($addresses_array as $address_data) {
 	db_query("UPDATE `wallets` SET `address`='$address_escaped' WHERE `uid`='$uid_escaped' AND (`address`='' OR `address` IS NULL)");
 }
 
+/*
 // Syncronizing transactions
 echo "Synchronizing transactions\n";
 echo "Try 10 transactions...\n";
@@ -198,6 +200,7 @@ foreach($transactions_array as $transaction_data) {
 		update_user_balance($user_uid);
 	}
 }
+*/
 
 // Send pending transactions
 echo "Sending transactions\n";
