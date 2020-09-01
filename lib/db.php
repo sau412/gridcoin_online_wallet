@@ -13,26 +13,17 @@ function db_connect() {
 
 // Query
 function db_query($query) {
-		global $project_log_name;
-		global $db_queries_count;
-		$db_queries_count++;
+        global $project_log_name;
+        global $db_queries_count;
+        $db_queries_count++;
         $result=mysql_query($query);
         if($result===FALSE) {
-                $query_escaped=db_escape($query);
-                syslog(LOG_DEBUG,"[$project_log_name] MySQL query error: ".mysql_error());
-                syslog(LOG_DEBUG,"[$project_log_name] Query: $query");
-                $debug_backtrace_array=debug_backtrace();
-                $backtrace_string="Stack trace:\n";
-                foreach($debug_backtrace_array as $stack_info) {
-                        $file=$stack_info['file'];
-                        $line=$stack_info['line'];
-                        $func=$stack_info['function'];
-                        $args=implode("','",$stack_info['args']);
-                        $backtrace_string.="File '$file' line '$line' function '$func' arguments '$args'\n";
-                }
-                syslog(LOG_DEBUG,"[$project_log_name] ".$backtrace_string);
-                die("Query error");
-        }
+		$message["mysql_error"] = mysql_error();
+                $message["query"] = $query;
+                $message["debug_backtrace"] = debug_backtrace();
+                log_write($message, 3);
+		die("Query error");
+	}
         return $result;
 }
 

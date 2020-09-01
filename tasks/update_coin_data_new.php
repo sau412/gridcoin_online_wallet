@@ -71,8 +71,6 @@ function update_transaction($user_uid, $address, $txid) {
                     VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
                             '$status_escaped', '$txid_escaped', '$confirmations_escaped')");
     }
-
-    
 }
 
 db_connect();
@@ -120,6 +118,7 @@ foreach($received_by_address_array as $received_by_address) {
         foreach($txids_array as $txid) {
             update_transaction($user_uid, $address, $txid);
             update_received_by_address($address);
+            update_user_balance($user_uid);
         }
     }
 }
