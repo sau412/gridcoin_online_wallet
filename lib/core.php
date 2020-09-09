@@ -11,13 +11,7 @@ function html_escape($data) {
 // Add message to log
 function write_log($message,$user_uid='') {
         global $project_log_name;
-        syslog(LOG_DEBUG,"[$project_log_name] user_uid '$user_uid' $message");
-
-        $message_escaped=db_escape($message);
-        $user_uid_escaped=db_escape($user_uid);
-        if($user_uid_escaped=='') $user_uid_escaped="NULL";
-        else $user_uid_escaped="'$user_uid_escaped'";
-        db_query("INSERT INTO `log` (`message`,`user_uid`) VALUES ('$message_escaped',$user_uid_escaped)");
+        log_write($message);
 }
 
 // Checks is string contains only ASCII symbols
