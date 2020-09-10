@@ -17,4 +17,3 @@ echo " users_balance:$users_balance";
 echo " wallet_balance:$wallet_balance";
 echo " total_addr:$total_addr";
 echo " total_tx:$total_tx";
-?>

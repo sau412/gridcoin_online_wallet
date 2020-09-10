@@ -20,5 +20,3 @@ foreach($user_uids_array as $row) {
 		 echo "Balance ok user $user_uid\n";
 	}
 }
-
-?>

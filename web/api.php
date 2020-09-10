@@ -123,4 +123,3 @@ switch($method) {
                 echo json_encode(array("error"=>"Unknown method"));
                 break;
 }
-?>
