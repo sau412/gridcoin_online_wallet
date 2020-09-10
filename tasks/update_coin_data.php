@@ -187,7 +187,8 @@ if(count($transactions_to_send)!=0) {
 		if($address_validation_result === TRUE) {
 			//coin_rpc_set_tx_fee($sending_fee);
 			//$tx_id=coin_rpc_send($address,$amount);
-			$sendmany_data[$address] = $amount;
+			if(isset($sendmany_data[$address])) $sendmany_data[$address] += $amount;
+			else $sendmany_data[$address] = $amount;
 			$sendmany_tx_uids[] = $uid_escaped;
 			$sendmany_user_uids[] = $user_uid;
 
