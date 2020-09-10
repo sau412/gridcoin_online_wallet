@@ -13,6 +13,7 @@ $tx_data_array=db_query_to_array("SELECT * FROM `transactions`");
 foreach($tx_data_array as $row) {
     $tx_uid = $row['uid'];
     $tx_id = $row['tx_id'];
+    $status = $row['status'];
     $tx_data = coin_rpc_get_single_transaction($tx_id);
     $confirmations = $tx_data['confirmations'];
     if($confirmations > 0) continue;
