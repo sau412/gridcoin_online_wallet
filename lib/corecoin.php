@@ -122,6 +122,26 @@ function coin_rpc_send($coin_address,$amount) {
 	else return FALSE;
 }
 
+// Send coins to multiple addresses in one transaction
+function coin_rpc_sendmany($sending_data) {
+	$sending_data_checked = [];
+	foreach($sending_data as $address => $amount) {
+		$sending_data_checked[$address] = sprintf("%0.8F",$amount);
+	}
+	$query = json_encode([
+			"id" => 1,
+			"method" => "sendmany",
+			"params" => [
+				"",
+				$sending_data_checked,
+			],
+	]);
+	$result = coin_rpc_send_query($query);
+	$data = json_decode($result, true);
+	if($data->error == NULL) return $data['result'];
+	else return FALSE;
+}
+
 // Get whitelisted project list
 function coin_rpc_get_projects() {
 	$query='{"id":1,"method":"projects","params":[]}';
