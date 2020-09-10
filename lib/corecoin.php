@@ -126,7 +126,7 @@ function coin_rpc_send($coin_address,$amount) {
 function coin_rpc_sendmany($sending_data) {
 	$sending_data_checked = [];
 	foreach($sending_data as $address => $amount) {
-		$sending_data_checked[$address] = sprintf("%0.8F",$amount);
+		$sending_data_checked[$address] = (double)sprintf("%0.8F",$amount);
 	}
 	$query = json_encode([
 			"id" => 1,
