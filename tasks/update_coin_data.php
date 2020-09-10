@@ -188,8 +188,8 @@ if(count($transactions_to_send)!=0) {
 			//coin_rpc_set_tx_fee($sending_fee);
 			//$tx_id=coin_rpc_send($address,$amount);
 			$sendmany_data[$address] = $amount;
-			$sendmany_tx_uids[] = [$uid_escaped];
-			$sendmany_user_uids[] = [$user_uid];
+			$sendmany_tx_uids[] = $uid_escaped;
+			$sendmany_user_uids[] = $user_uid;
 
 			/*if($tx_id==NULL || $tx_id==FALSE) {
 				echo "Sending error to address $address amount $amount\n";
