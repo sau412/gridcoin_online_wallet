@@ -138,7 +138,7 @@ function coin_rpc_sendmany($sending_data) {
 	]);
 	$result = coin_rpc_send_query($query);
 	$data = json_decode($result, true);
-	if($data->error == NULL) return $data['result'];
+	if($data['error'] == NULL) return $data['result'];
 	else return FALSE;
 }
 

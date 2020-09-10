@@ -214,11 +214,13 @@ if(count($transactions_to_send)!=0) {
 		$tx_id = coin_rpc_sendmany($sendmany_data);
 		$tx_uids_str_escaped = implode("','", $sendmany_tx_uids);
 		if($tx_id == NULL || $tx_id == FALSE) {
-			echo "Sending error to address $address amount $amount\n";
+			echo "Sendnamy error\n";
+			var_dump($sendmany_data);
 			//db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid` IN ('$tx_uids_str_escaped')");
 		}
 		else {
 			echo "Sendmany ok\n";
+			var_dump($sendmany_data);
 			db_query("UPDATE `transactions` SET `status` = 'sent', `tx_id` = '$tx_id' WHERE `uid` IN ('$tx_uids_str_escaped')");
 			foreach($sendmany_user_uids as $user_uid) {
 				update_user_balance($user_uid);
