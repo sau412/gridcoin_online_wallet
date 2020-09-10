@@ -14,5 +14,8 @@ foreach($tx_data_array as $row) {
     $tx_uid = $row['uid'];
     $tx_id = $row['tx_id'];
     $tx_data = coin_rpc_get_single_transaction($tx_id);
-    var_dump($tx_data);
+    $confirmations = $tx_data['confirmations'];
+    if($confirmations > 0) continue;
+    echo "TX uid $tx_uid txid $tx_id confirmations $confirmations\n";
+//    var_dump($tx_data);
 }
