@@ -302,6 +302,7 @@ function notify_user($user_uid,$subject,$body) {
 function user_send($user_uid,$amount,$address) {
         global $currency_short;
 	global $sending_fee;
+        global $min_send_amount;
 
         // Check payouts enabled
         if(get_variable("payouts_enabled")==0) return FALSE;
@@ -309,7 +310,7 @@ function user_send($user_uid,$amount,$address) {
         // Validate data
         if(!validate_number($amount)) return FALSE;
         if(!validate_ascii($address)) return FALSE;
-        if($amount<=0) return FALSE;
+        if($amount <= $min_send_amount) return FALSE;
         if($address=="") return FALSE;
 
         // Check user balance

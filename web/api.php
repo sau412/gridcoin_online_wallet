@@ -108,7 +108,7 @@ switch($method) {
 
                 $amount=stripslashes($_POST['amount']);
                 $address=stripslashes($_POST['address']);
-                if(!validate_number($amount)) die("Wrong amount");
+                if(!validate_number($amount) || $amount < $min_send_amount) die("Wrong amount");
                 if(!validate_ascii($address)) die("Wrong address");
 
                 $transaction_uid=user_send($user_uid,$amount,$address);
