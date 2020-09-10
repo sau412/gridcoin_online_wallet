@@ -137,7 +137,11 @@ foreach($transactions_array as $transaction_data) {
 		//$exists=db_query_to_variable("SELECT 1 FROM `transactions` WHERE `tx_id`='$tx_id_escaped'");
 		echo "Transaction $tx_id address $address amount $amount status $status user_uid $user_uid\n";
 		$user_uid_escaped=db_escape($user_uid);
-		$tx_uid=db_query_to_variable("SELECT `uid` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped' AND `status` IN ('received','pending')");
+		$tx_uid=db_query_to_variable("SELECT `uid` FROM `transactions`
+										WHERE `user_uid`='$user_uid_escaped' AND
+												`tx_id`='$tx_id_escaped' AND
+												`address` = '$address_escaped' AND
+												`status` IN ('received','pending')");
 		if($tx_uid) {
 			$tx_uid_escaped=db_escape($tx_uid);
 			$base_status=db_query_to_variable("SELECT `status` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
