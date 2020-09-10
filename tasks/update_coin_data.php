@@ -162,6 +162,10 @@ echo "Sending transactions\n";
 $transactions_to_send=db_query_to_array("SELECT `uid`,`user_uid`,`amount`,`address` FROM `transactions` WHERE `status`='processing'");
 
 if(count($transactions_to_send)!=0) {
+	$sendmany_tx_uids = [];
+	$sendmany_user_uids = [];
+	$sendmany_data = [];
+
 	// Unlock wallet
 	if(coin_rpc_unlock_wallet() == FALSE) {
 		echo "Unlock wallet error\n";
@@ -171,33 +175,58 @@ if(count($transactions_to_send)!=0) {
 
 	// Commit transactions
 	foreach($transactions_to_send as $tx_data) {
-		$uid=$tx_data['uid'];
-		$user_uid=$tx_data['user_uid'];
-		$amount=$tx_data['amount'];
-		$address=$tx_data['address'];
+		$uid = $tx_data['uid'];
+		$user_uid = $tx_data['user_uid'];
+		$amount = $tx_data['amount'];
+		$address = $tx_data['address'];
 
-		$uid_escaped=db_escape($uid);
+		$uid_escaped = db_escape($uid);
+		$user_uid_escaped = db_escape($user_uid);
 
-		if(coin_rpc_validate_address($address)===TRUE) {
-			coin_rpc_set_tx_fee($sending_fee);
-			$tx_id=coin_rpc_send($address,$amount);
+		$address_validation_result = coin_rpc_validate_address($address);
+		if($address_validation_result === TRUE) {
+			//coin_rpc_set_tx_fee($sending_fee);
+			//$tx_id=coin_rpc_send($address,$amount);
+			$sendmany_data[$address] = $amount;
+			$sendmany_tx_uids[] = [$uid_escaped];
+			$sendmany_user_uids[] = [$user_uid];
 
-			if($tx_id==NULL || $tx_id==FALSE) {
+			/*if($tx_id==NULL || $tx_id==FALSE) {
 				echo "Sending error to address $address amount $amount\n";
 				//db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid`='$uid_escaped'");
 			} else {
 				echo "Sent to address $address amount $amount\n";
 				db_query("UPDATE `transactions` SET `status`='sent',`tx_id`='$tx_id' WHERE `uid`='$uid_escaped'");
-			}
-		} else if(coin_rpc_validate_address($address)===FALSE) {
+			}*/
+		} else if($address_validation_result === FALSE) {
 			echo "Address error to address $address amount $amount\n";
 			db_query("UPDATE `transactions` SET `tx_id`='',`status`='address error' WHERE `uid`='$uid_escaped'");
 		} else {
 			echo "Address validation '$address' failed";
 		}
+
 		update_user_balance($user_uid);
 	}
 
+	// Send transactions with sendmany
+	if(count($sendmany_data) > 0) {
+		coin_rpc_set_tx_fee($sending_fee);
+		$tx_id = coin_rpc_sendmany($sendmany_data);
+		$tx_uids_str_escaped = implode("','", $sendmany_tx_uids);
+		if($tx_id == NULL || $tx_id == FALSE) {
+			echo "Sending error to address $address amount $amount\n";
+			//db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid` IN ('$tx_uids_str_escaped')");
+		}
+		else {
+			echo "Sendmany ok\n";
+			db_query("UPDATE `transactions` SET `status` = 'sent', `tx_id` = '$tx_id' WHERE `uid` IN ('$tx_uids_str_escaped')");
+			foreach($sendmany_user_uids as $user_uid) {
+				update_user_balance($user_uid);
+			}
+		}
+	}
+
+	//coin_rpc_set_tx_fee($sending_fee);
 	// Lock wallet
 	if(coin_rpc_lock_wallet() == FALSE) {
 		echo "Lock wallet error\n";
