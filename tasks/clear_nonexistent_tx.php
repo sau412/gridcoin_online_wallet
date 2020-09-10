@@ -17,5 +17,12 @@ foreach($tx_data_array as $row) {
     $confirmations = $tx_data['confirmations'];
     if($confirmations > 0) continue;
     echo "TX uid $tx_uid txid $tx_id confirmations $confirmations\n";
-//    var_dump($tx_data);
+    $tx_uid_escaped = db_escape($tx_uid);
+    if($status == 'sent') {
+        db_query("UPDATE `transactions` SET `status` = 'error' WHERE `uid` = '$tx_uid_escaped'");
+    }
+    else if($status == 'received' || $status == 'pending') {
+        db_query("UPDATE `transactions` SET `status` = 'error' WHERE `uid` = '$tx_uid_escaped'");
+    }
+        //    var_dump($tx_data);
 }
