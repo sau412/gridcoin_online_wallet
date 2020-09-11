@@ -14,10 +14,13 @@ foreach($tx_data_array as $row) {
     $tx_uid = $row['uid'];
     $tx_id = $row['tx_id'];
     $status = $row['status'];
+    if($tx_id == '') continue;
+
     $tx_data = coin_rpc_get_single_transaction($tx_id);
     $confirmations = $tx_data['confirmations'];
     if($confirmations > 0) continue;
-    echo "TX uid $tx_uid txid $tx_id confirmations $confirmations\n";
+    
+    echo "Unconfirmed TX uid $tx_uid txid $tx_id confirmations $confirmations\n";
     $tx_uid_escaped = db_escape($tx_uid);
     if($status == 'sent') {
         db_query("UPDATE `transactions` SET `status` = 'error' WHERE `uid` = '$tx_uid_escaped'");
