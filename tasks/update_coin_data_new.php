@@ -119,7 +119,7 @@ foreach($received_by_address_array as $received_by_address) {
         foreach($txids_array as $txid) {
 			echo "Transaction $txid\n";
 			$txid_escaped = db_escape($txid);
-			$address_escaped = db_escaped($address);
+			$address_escaped = db_escape($address);
 			$exists = db_query_to_variable("SELECT 1 FROM `transactions`
 											WHERE `tx_id` = '$txid_escaped' AND
 												`address` = '$address_escaped'
