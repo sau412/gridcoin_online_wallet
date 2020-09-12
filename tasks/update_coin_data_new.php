@@ -134,7 +134,7 @@ foreach($received_by_address_array as $received_by_address) {
 				echo "Syncing transaction $txid\n";
 				update_transaction($user_uid, $address, $txid);
 			} else {
-				echo "Transaction $tx_id already exists\n";
+				echo "Transaction $txid already exists\n";
 			}
 			/*$txid_escaped = db_escape($txid);
 			$address_escaped = db_escape($address);
