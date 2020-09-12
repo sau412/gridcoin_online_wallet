@@ -129,10 +129,12 @@ foreach($received_by_address_array as $received_by_address) {
         echo "Something received user $user_uid for $address, syncing transactions\n";
 
         foreach($txids_array as $txid) {
-			echo "Transaction $txid\n";
 			$hash = hash("sha256", $tx_id.$address);
 			if(!in_array($hash, $received_hash)) {
+				echo "Syncing transaction $txid\n";
 				update_transaction($user_uid, $address, $txid);
+			} else {
+				echo "Transaction $tx_id already exists\n";
 			}
 			/*$txid_escaped = db_escape($txid);
 			$address_escaped = db_escape($address);
