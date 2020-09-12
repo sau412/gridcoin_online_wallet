@@ -49,6 +49,7 @@ function update_transaction($user_uid, $address, $txid) {
     $total_amount_escaped = db_escape($total_amount);
     $exists_txid_uid = db_query_to_variable("SELECT `uid` FROM `transactions`
                                                 WHERE `tx_id` = '$txid_escaped' AND
+														`address` = '$address_escaped' AND
                                                         `status` IN ('received', 'pending') AND
                                                         `user_uid` = '$user_uid_escaped'");
     $status = "pending";
