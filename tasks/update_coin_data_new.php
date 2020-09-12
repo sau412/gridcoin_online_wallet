@@ -122,7 +122,7 @@ foreach($received_by_address_array as $received_by_address) {
 			$address_escaped = db_escape($address);
 			$exists = db_query_to_variable("SELECT 1 FROM `transactions`
 											WHERE `tx_id` = '$txid_escaped' AND
-												`address` = '$address_escaped'
+												`address` = '$address_escaped' AND
 												`status` IN ('received')");
             if(!$exists) {
 				update_transaction($user_uid, $address, $txid);
