@@ -108,7 +108,8 @@ foreach($received_by_address_array as $received_by_address) {
 
     $address_escaped = db_escape($address);
     $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
-    if($amount > $received) {
+	$update_all = true;
+	if($amount > $received || $update_all) {
         $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
         if(!$user_uid) continue;
@@ -116,10 +117,19 @@ foreach($received_by_address_array as $received_by_address) {
         echo "Something received user $user_uid for $address, syncing transactions\n";
 
         foreach($txids_array as $txid) {
-            update_transaction($user_uid, $address, $txid);
-            update_received_by_address($address);
-            update_user_balance($user_uid);
+			echo "Transaction $txid\n";
+			$txid_escaped = db_escape($txid);
+			$address_escaped = db_escaped($address);
+			$exists = db_query_to_variable("SELECT 1 FROM `transactions`
+											WHERE `tx_id` = '$txid_escaped' AND
+												`address` = '$address_escaped'
+												`status` IN ('received')");
+            if(!$exists) {
+				update_transaction($user_uid, $address, $txid);
+			}
         }
+		update_received_by_address($address);
+		update_user_balance($user_uid);
     }
 }
 
@@ -135,71 +145,6 @@ foreach($addresses_array as $address_data) {
 	echo "New address $address\n";
 	db_query("UPDATE `wallets` SET `address`='$address_escaped' WHERE `uid`='$uid_escaped' AND (`address`='' OR `address` IS NULL)");
 }
-
-/*
-// Syncronizing transactions
-echo "Synchronizing transactions\n";
-echo "Try 10 transactions...\n";
-$transactions_array=coin_rpc_get_transactions(10);
-
-// Check max confirmations
-$max_confirmations = 0;
-foreach($transactions_array as $transaction_data) {
-	$confirmations = $transaction_data->confirmations;
-	if($confirmations > $max_confirmations) {
-		$max_confirmations = $confirmations;
-	}
-}
-echo "Max confirmations is $max_confirmations\n";
-if($max_confirmations <= $wallet_receive_confirmations) {
-	echo "Max confirmations too small, syncronizing more transactions...\n";
-	$transactions_array=coin_rpc_get_transactions(1000);
-}
-
-foreach($transactions_array as $transaction_data) {
-	$amount=$transaction_data->amount;
-	$address=$transaction_data->address;
-	$category=$transaction_data->category;
-	$tx_id=$transaction_data->txid;
-	$confirmations=$transaction_data->confirmations;
-
-	$amount_escaped=db_escape($amount);
-	$address_escaped=db_escape($address);
-	$tx_id_escaped=db_escape($tx_id);
-	$confirmations_escaped=db_escape($confirmations);
-
-	if($category=="receive") {
-		update_received_by_address($address);
-		if($confirmations>=$wallet_receive_confirmations) $status="received";
-		else $status="pending";
-	} else {
-		// Interest transactions
-		//var_dump($transaction_data);
-		continue;
-	}
-
-	$user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
-
-	if($user_uid) {
-		//$exists=db_query_to_variable("SELECT 1 FROM `transactions` WHERE `tx_id`='$tx_id_escaped'");
-		echo "Transaction $tx_id address $address amount $amount status $status user_uid $user_uid\n";
-		$user_uid_escaped=db_escape($user_uid);
-		$tx_uid=db_query_to_variable("SELECT `uid` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped' AND `status` IN ('received','pending')");
-		if($tx_uid) {
-			$tx_uid_escaped=db_escape($tx_uid);
-			$base_status=db_query_to_variable("SELECT `status` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' AND `tx_id`='$tx_id_escaped'");
-			if($base_status=='pending' && $status=='received') {
-				write_log("Received $amount $currency_short TX ID $tx_id",$user_uid);
-				notify_user($user_uid,"Received $amount $currency_short","TX ID: $tx_id\n");
-			}
-			db_query("UPDATE `transactions` SET `status`='$status',`confirmations`='$confirmations_escaped' WHERE `uid`='$tx_uid_escaped'");
-		} else {
-			db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`) VALUES ('$user_uid','$amount_escaped','$address_escaped','$status','$tx_id_escaped','$confirmations_escaped')");
-		}
-		update_user_balance($user_uid);
-	}
-}
-*/
 
 // Send pending transactions
 echo "Sending transactions\n";
