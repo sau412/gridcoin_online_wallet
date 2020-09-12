@@ -96,6 +96,18 @@ if(isset($network_block) && $network_block!=0) {
 	set_variable("current_block_hash",$current_block_hash);
 }
 
+$received_hash = [];
+$received_transactions_array = db_Query_to_array("SELECT DISTINCT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
+foreach($received_transactions_array as $received_transaction_data) {
+	$tx_id = $received_transaction_data['tx_id'];
+	$address = $received_transaction_data['address'];
+
+	$hash = hash("sha256", $tx_id.$address);
+	if(!in_array($hash, $received_hash)) {
+		$received_hash[] = $hash;
+	}
+}
+
 $received_by_address_array = coin_rpc_list_received_by_address();
 
 foreach($received_by_address_array as $received_by_address) {
@@ -118,7 +130,11 @@ foreach($received_by_address_array as $received_by_address) {
 
         foreach($txids_array as $txid) {
 			echo "Transaction $txid\n";
-			$txid_escaped = db_escape($txid);
+			$hash = hash("sha256", $tx_id.$address);
+			if(!in_array($hash, $received_hash)) {
+				update_transaction($user_uid, $address, $txid);
+			}
+			/*$txid_escaped = db_escape($txid);
 			$address_escaped = db_escape($address);
 			$exists = db_query_to_variable("SELECT 1 FROM `transactions`
 											WHERE `tx_id` = '$txid_escaped' AND
@@ -126,7 +142,7 @@ foreach($received_by_address_array as $received_by_address) {
 												`status` IN ('received')");
             if(!$exists) {
 				update_transaction($user_uid, $address, $txid);
-			}
+			}*/
         }
 		update_received_by_address($address);
 		update_user_balance($user_uid);
