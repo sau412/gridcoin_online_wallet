@@ -129,7 +129,7 @@ foreach($received_by_address_array as $received_by_address) {
         echo "Something received user $user_uid for $address, syncing transactions\n";
 
         foreach($txids_array as $txid) {
-			$hash = hash("sha256", $tx_id.$address);
+			$hash = hash("sha256", $txid.$address);
 			if(!in_array($hash, $received_hash)) {
 				echo "Syncing transaction $txid\n";
 				update_transaction($user_uid, $address, $txid);
