@@ -124,8 +124,13 @@ foreach($received_by_address_array as $received_by_address) {
 
     $address_escaped = db_escape($address);
     $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
-	$update_all = true;
-	if($amount > $received || $update_all) {
+
+	$received_in_transactions = db_query_to_variable("SELECT SUM(`amount`) FROM `transactions`
+													WHERE `status` IN ('received') AND
+															`address` = '$address_escaped'");
+	
+	$update_all = false;
+	if($amount > $received || $received != $received_transactions || $update_all) {
         $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
         if(!$user_uid) continue;
@@ -140,15 +145,6 @@ foreach($received_by_address_array as $received_by_address) {
 			} else {
 				echo "Transaction $txid already exists\n";
 			}
-			/*$txid_escaped = db_escape($txid);
-			$address_escaped = db_escape($address);
-			$exists = db_query_to_variable("SELECT 1 FROM `transactions`
-											WHERE `tx_id` = '$txid_escaped' AND
-												`address` = '$address_escaped' AND
-												`status` IN ('received')");
-            if(!$exists) {
-				update_transaction($user_uid, $address, $txid);
-			}*/
         }
 		update_received_by_address($address);
 		update_user_balance($user_uid);
