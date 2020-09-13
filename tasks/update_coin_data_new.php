@@ -130,12 +130,14 @@ foreach($received_by_address_array as $received_by_address) {
 															`address` = '$address_escaped'");
 	
 	$update_all = false;
+
 	if($amount > $received || $received != $received_in_transactions || $update_all) {
         $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
         if(!$user_uid) continue;
 
-        echo "Something received user $user_uid for $address, syncing transactions\n";
+		echo "Something received user $user_uid for $address\n";
+		echo "Received by wallet $received, received by transactions $received_in_transactions, syncing transactions\n";
 
         foreach($txids_array as $txid) {
 			$hash = hash("sha256", $txid.$address);
