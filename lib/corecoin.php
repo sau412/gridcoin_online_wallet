@@ -49,9 +49,23 @@ function coin_rpc_get_current_superblock_number() {
 
 // Get transaction
 function coin_rpc_get_single_transaction($txid) {
-	$query='{"id":1,"method":"gettransaction","params":["'.$txid.'"]}';
+	$query=json_encode([
+		"id" => 1,
+		"method" => "gettransaction",
+		"params" => [$txid, false, true]
+	]);
 	$result=coin_rpc_send_query($query);
 	$data=json_decode($result, true);
+	if($data['error']) {
+		$query=json_encode([
+			"id" => 1,
+			"method" => "gettransaction",
+			"params" => [$txid]
+		]);
+		$result=coin_rpc_send_query($query);
+		$data=json_decode($result, true);		
+	}
+	if($data['error']) return FALSE;
 	return $data['result'];
 }
 
