@@ -70,7 +70,8 @@ function update_transaction($user_uid, $address, $txid) {
 			echo "Amount in DB $amount_exists, amount in tx $total_amount_escaped\n";
 		}
         db_query("UPDATE `transactions` SET `status` = '$status_escaped',
-						`confirmations` = '$confirmations_escaped'
+						`confirmations` = '$confirmations_escaped',
+						`amount` = '$total_amount_escaped'
                     WHERE `uid` = '$exists_txid_uid_escaped'");
     }
     else {
