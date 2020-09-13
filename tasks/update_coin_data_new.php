@@ -25,7 +25,7 @@ function update_received_by_address($address) {
 	$address_escaped=db_escape($address);
 	$address_received_escaped=db_escape($address_received);
 	db_query("UPDATE `wallets` SET `received`='$address_received_escaped'
-				WHERE `address`='$address_escaped' AND `received`<'$address_received_escaped'");
+				WHERE `address`='$address_escaped'");
 }
 
 function update_transaction($user_uid, $address, $txid) {
