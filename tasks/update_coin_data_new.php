@@ -130,7 +130,7 @@ foreach($received_by_address_array as $received_by_address) {
 															`address` = '$address_escaped'");
 	
 	$update_all = false;
-	if($amount > $received || $received != $received_transactions || $update_all) {
+	if($amount > $received || $received != $received_in_transactions || $update_all) {
         $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
 
         if(!$user_uid) continue;
