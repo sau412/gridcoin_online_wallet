@@ -32,7 +32,10 @@ function update_transaction($user_uid, $address, $txid) {
     global $wallet_receive_confirmations;
 
     $transaction = coin_rpc_get_single_transaction($txid);
-    $vout_array = $transaction['vout'];
+	$vout_array = $transaction['vout'];
+	if(!$vout_array) {
+		$vout_array = $transaction['decoded']['vout'];
+	}
     $confirmations = $transaction["confirmations"];
     $total_amount = 0;
     foreach($vout_array as $vout) {
