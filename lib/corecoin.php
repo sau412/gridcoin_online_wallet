@@ -224,4 +224,21 @@ function coin_rpc_list_received_by_address() {
 	else return FALSE;
 }
 
-?>
+// Decode raw transaction
+function coin_decode_raw_transaction($tx_data) {
+	$sending_data_checked = [];
+	foreach($sending_data as $address => $amount) {
+		$sending_data_checked[$address] = (double)sprintf("%0.8F",$amount);
+	}
+	$query = json_encode([
+			"id" => 1,
+			"method" => "decoderawtransaction",
+			"params" => [
+				$tx_data,
+			],
+	]);
+	$result = coin_rpc_send_query($query);
+	$data = json_decode($result, true);
+	if($data['error'] == NULL) return $data['result'];
+	else return FALSE;
+}

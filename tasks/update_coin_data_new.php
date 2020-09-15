@@ -35,6 +35,11 @@ function update_transaction($user_uid, $address, $txid) {
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
+		if(!$vout_array) {
+			$raw_transaction = $transaction['hex'];
+			$tx_decoded = coin_decode_raw_transaction($raw_transaction);
+			$vout_array = $tx_decoded['vout'];
+		}
 	}
     $confirmations = $transaction["confirmations"];
     $total_amount = 0;
