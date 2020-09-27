@@ -111,7 +111,7 @@ if(isset($network_block) && $network_block!=0) {
 }
 
 $received_hash = [];
-$received_transactions_array = db_Query_to_array("SELECT DISTINCT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
+$received_transactions_array = db_query_to_array("SELECT DISTINCT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
 foreach($received_transactions_array as $received_transaction_data) {
 	$tx_id = $received_transaction_data['tx_id'];
 	$address = $received_transaction_data['address'];
@@ -120,6 +120,14 @@ foreach($received_transactions_array as $received_transaction_data) {
 	if(!in_array($hash, $received_hash)) {
 		$received_hash[] = $hash;
 	}
+}
+
+$received_in_db = [];
+$received_in_db_array = db_query_to_array("SELECT `address`, `received` FROM `wallets`");
+foreach($received_in_db_array as $received_row) {
+	$address = $received_row['address'];
+	$received = $received_row['received'];
+	$received_in_db[$address] = $received;
 }
 
 $received_by_address_array = coin_rpc_list_received_by_address();
@@ -132,13 +140,15 @@ foreach($received_by_address_array as $received_by_address) {
     if(!$address) continue;
     if(!$amount) continue;
 
-    $address_escaped = db_escape($address);
-    $received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
-
-	$received_in_transactions = db_query_to_variable("SELECT SUM(`amount`) FROM `transactions`
+	$address_escaped = db_escape($address);
+	$received = $received_in_db[$address];
+    //$received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
+	$received_in_transactions = $received;
+	// Required only for thorough checking
+	/*$received_in_transactions = db_query_to_variable("SELECT SUM(`amount`) FROM `transactions`
 													WHERE `status` IN ('received') AND
 															`address` = '$address_escaped'");
-	
+	*/
 	$update_all = false;
 
 	if($amount > $received || $received != $received_in_transactions || $update_all) {
