@@ -7,7 +7,7 @@ require_once("../lib/email.php");
 require_once("../lib/broker.php");
 require_once("../lib/logger.php");
 
-$f=fopen($lockfile,"w");
+$f=fopen($lockfile."send","w");
 if($f) {
         echo "Checking locks\n";
         if(!flock($f,LOCK_EX|LOCK_NB)) {
