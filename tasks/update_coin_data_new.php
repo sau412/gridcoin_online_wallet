@@ -139,7 +139,8 @@ foreach($received_by_address_array as $received_by_address) {
 
     if(!$address) continue;
     if(!$amount) continue;
-
+	if(!isset($received_in_db[$address])) continue;
+	
 	$address_escaped = db_escape($address);
 	$received = $received_in_db[$address];
     //$received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
