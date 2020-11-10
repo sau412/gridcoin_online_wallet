@@ -75,7 +75,7 @@ if(count($transactions_to_send)!=0) {
 		$tx_id = coin_rpc_sendmany($sendmany_data);
 		$tx_uids_str_escaped = implode("','", $sendmany_tx_uids);
 		if($tx_id == NULL || $tx_id == FALSE) {
-			echo "Sendnamy error\n";
+			echo "Sendmany error\n";
 			var_dump($sendmany_data);
 			//db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid` IN ('$tx_uids_str_escaped')");
 		}
