@@ -98,7 +98,7 @@ $transactions_array=coin_rpc_get_transactions(10);
 // Check max confirmations
 $max_confirmations = 0;
 foreach($transactions_array as $transaction_data) {
-	$confirmations = $transaction_data->confirmations;
+	$confirmations = $transaction_data['confirmations'];
 	if($confirmations > $max_confirmations) {
 		$max_confirmations = $confirmations;
 	}
@@ -110,11 +110,11 @@ if($max_confirmations <= $wallet_receive_confirmations) {
 }
 
 foreach($transactions_array as $transaction_data) {
-	$amount=$transaction_data->amount;
-	$address=$transaction_data->address;
-	$category=$transaction_data->category;
-	$tx_id=$transaction_data->txid;
-	$confirmations=$transaction_data->confirmations;
+	$amount=$transaction_data['amount'];
+	$address=$transaction_data['address'];
+	$category=$transaction_data['category'];
+	$tx_id=$transaction_data['txid'];
+	$confirmations=$transaction_data['confirmations'];
 
 	$amount_escaped=db_escape($amount);
 	$address_escaped=db_escape($address);
