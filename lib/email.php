@@ -20,5 +20,3 @@ function email_add($user_uid,$to,$subject,$body) {
 	
 	broker_add("mailer", $message);
 }
-
-?>

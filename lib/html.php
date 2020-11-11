@@ -587,5 +587,3 @@ function html_captcha() {
 _END;
         return $result;
 }
-
-?>

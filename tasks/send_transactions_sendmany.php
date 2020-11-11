@@ -109,5 +109,3 @@ set_variable("wallet_balance",$balance);
 
 echo "DB queries count $db_queries_count\n";
 echo "Done\n";
-
-?>
