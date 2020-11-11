@@ -301,7 +301,8 @@ function notify_user($user_uid,$subject,$body) {
 // Send
 function user_send($user_uid,$amount,$address) {
         global $currency_short;
-	global $sending_fee;
+	global $sending_fee_core;
+	global $sending_fee_user;
         global $min_send_amount;
 
         // Check payouts enabled
@@ -316,14 +317,15 @@ function user_send($user_uid,$amount,$address) {
         // Check user balance
 	db_query("LOCK TABLES `transactions` WRITE,`users` WRITE");
         $balance=get_user_balance($user_uid);
-        if($balance < ($amount + $sending_fee)) return FALSE;
+        if($balance < ($amount + $sending_fee_user)) return FALSE;
 
         // Add transaction to schedule
         $user_uid_escaped=db_escape($user_uid);
         $amount_escaped=db_escape($amount);
         $address_escaped=db_escape($address);
-	$fee_escaped=db_escape($sending_fee);
-        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`fee`,`address`,`status`) VALUES ('$user_uid_escaped','$amount_escaped','$fee_escaped','$address_escaped','processing')");
+	$fee_escaped=db_escape($sending_fee_user);
+        db_query("INSERT INTO `transactions` (`user_uid`,`amount`,`fee`,`address`,`status`)
+                        VALUES ('$user_uid_escaped','$amount_escaped','$fee_escaped','$address_escaped','processing')");
         $transaction_uid=mysql_insert_id();
 
         // Adjust user balance
@@ -333,7 +335,8 @@ function user_send($user_uid,$amount,$address) {
         // Send notifications
         $username=get_username_by_uid($user_uid);
         write_log("'$username' sent '$amount' $currency_short to address '$address'",$user_uid);
-        notify_user($user_uid,"$username sent $amount $currency_short","Amount: $amount $currency_short\nAddress: $address\nIP: ".$_SERVER['REMOTE_ADDR']);
+        notify_user($user_uid,"$username sent $amount $currency_short",
+                        "Amount: $amount $currency_short\nAddress: $address\nIP: ".$_SERVER['REMOTE_ADDR']);
 
         return $transaction_uid;
 }

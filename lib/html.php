@@ -168,7 +168,7 @@ function html_wallet_form($user_uid,$token) {
 // Balance
 function html_balance_and_send($user_uid,$token) {
         global $currency_short;
-	global $sending_fee;
+	global $sending_fee_user;
 
         $result="";
         $balance=get_user_balance($user_uid);
@@ -176,7 +176,7 @@ function html_balance_and_send($user_uid,$token) {
 
         $result.="<h2>%dashboard_balance% $balance $currency_short</h2>";
 
-	$sending_fee_formatted=sprintf("%0.8f",$sending_fee);
+	$sending_fee_formatted=sprintf("%0.8f",$sending_fee_user);
 
         $result.=<<<_END
 <form name=send method=post>

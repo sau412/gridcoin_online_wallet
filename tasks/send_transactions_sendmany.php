@@ -45,7 +45,7 @@ if(count($transactions_to_send)!=0) {
 
 		$address_validation_result = coin_rpc_validate_address($address);
 		if($address_validation_result === TRUE) {
-			//coin_rpc_set_tx_fee($sending_fee);
+			//coin_rpc_set_tx_fee($sending_fee_core);
 			//$tx_id=coin_rpc_send($address,$amount);
 			if(isset($sendmany_data[$address])) $sendmany_data[$address] += $amount;
 			else $sendmany_data[$address] = $amount;
@@ -71,7 +71,7 @@ if(count($transactions_to_send)!=0) {
 
 	// Send transactions with sendmany
 	if(count($sendmany_data) > 0) {
-		coin_rpc_set_tx_fee($sending_fee);
+		coin_rpc_set_tx_fee($sending_fee_core);
 		$tx_id = coin_rpc_sendmany($sendmany_data);
 		$tx_uids_str_escaped = implode("','", $sendmany_tx_uids);
 		if($tx_id == NULL || $tx_id == FALSE) {
@@ -89,7 +89,7 @@ if(count($transactions_to_send)!=0) {
 		}
 	}
 
-	//coin_rpc_set_tx_fee($sending_fee);
+	//coin_rpc_set_tx_fee($sending_fee_core);
 	// Lock wallet
 	if(coin_rpc_lock_wallet() == FALSE) {
 		echo "Lock wallet error\n";
