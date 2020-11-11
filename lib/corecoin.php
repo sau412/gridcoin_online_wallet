@@ -259,7 +259,7 @@ function coin_rpc_get_received_by_address($address) {
 	$query = json_encode([
 		"id" => 1,
 		"method" => "getreceivedbyaddress",
-		"params" => [$address_escaped],
+		"params" => [$address],
 	]);
 	$data = coin_rpc_send_query($query);
 	if($data['result']) {
