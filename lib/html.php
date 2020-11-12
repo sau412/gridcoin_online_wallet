@@ -235,7 +235,7 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
         $user_uid_escaped=db_escape($user_uid);
         $receiving_addresses_data_array=db_query_to_array("SELECT `wallets`.`address`, `wallets`.`received`, `aliases`.`label` FROM `wallets`
                                                                 LEFT OUTER JOIN `aliases` ON `aliases`.`user_uid` = '$user_uid_escaped' AND `aliases`.`address` = `wallets`.`address`
-                                                                WHERE `user_uid`='$user_uid_escaped' LIMIT $limit");
+                                                                WHERE `wallets`.`user_uid`='$user_uid_escaped' LIMIT $limit");
         $result.="<table class='table_horizontal'>\n";
         $result.=lang_parser("<tr><th>%receive_table_header_address%</th><th>%receive_table_header_received% $currency_short</th><th>%receive_table_header_label%</th></tr>");
         foreach($receiving_addresses_data_array as $receiving_addresses_data) {
