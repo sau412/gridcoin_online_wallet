@@ -244,7 +244,7 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
                 $label = $receiving_addresses_data['label'];
                 if($address == '') $address_url = lang_parser("<i>%receive_generating%</i>");
                 else $address_url = html_address_url($address);
-                $result. = "<tr><td>$address_url</td><td>$received</td><td>$label</td></tr>\n";
+                $result .= "<tr><td>$address_url</td><td>$received</td><td>$label</td></tr>\n";
         }
         $result.="</table>\n";
 
