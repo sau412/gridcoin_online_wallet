@@ -105,7 +105,7 @@ function coin_rpc_get_balance() {
 	]);
 
 	$data = coin_rpc_send_query($query);
-	if($data['result']) {
+	if($data['result'] || is_numeric($data['result'])) {
 		return $data['result'];
 	}
 	throw new Exception("WalletReplyError");
