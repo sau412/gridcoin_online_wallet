@@ -306,6 +306,11 @@ $json_language=<<<_END
         "ru":"Получено,",
         "fr":"Reçu,"
         },
+"receive_table_header_label":{
+        "en":"Label,",
+        "ru":"Название",
+        "fr":"Note"
+        },
 "transactions_header":{
         "en":"Transactions",
         "ru":"Транзакции",

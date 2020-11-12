@@ -233,15 +233,18 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
         $result="";
         $result.=lang_parser("<h2>%receive_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
-        $receiving_addresses_data_array=db_query_to_array("SELECT `address`,`received` FROM `wallets` WHERE `user_uid`='$user_uid_escaped' LIMIT $limit");
+        $receiving_addresses_data_array=db_query_to_array("SELECT `wallets`.`address`, `wallets`.`received`, `aliases`.`label` FROM `wallets`
+                                                                LEFT OUTER JOIN `aliases` ON `aliases`.`user_uid` = '$user_uid_escaped' AND `aliases`.`address` = `wallets`.`address`
+                                                                WHERE `user_uid`='$user_uid_escaped' LIMIT $limit");
         $result.="<table class='table_horizontal'>\n";
-        $result.=lang_parser("<tr><th>%receive_table_header_address%</th><th>%receive_table_header_received% $currency_short</th></tr>");
+        $result.=lang_parser("<tr><th>%receive_table_header_address%</th><th>%receive_table_header_received% $currency_short</th><th>%receive_table_header_label%</th></tr>");
         foreach($receiving_addresses_data_array as $receiving_addresses_data) {
-                $address=$receiving_addresses_data['address'];
-                $received=$receiving_addresses_data['received'];
-                if($address=='') $address_url=lang_parser("<i>%receive_generating%</i>");
-                else $address_url=html_address_url($address);
-                $result.="<tr><td>$address_url</td><td>$received</td></tr>\n";
+                $address = $receiving_addresses_data['address'];
+                $received = $receiving_addresses_data['received'];
+                $label = $receiving_addresses_data['label'];
+                if($address == '') $address_url = lang_parser("<i>%receive_generating%</i>");
+                else $address_url = html_address_url($address);
+                $result. = "<tr><td>$address_url</td><td>$received</td><td>$label</td></tr>\n";
         }
         $result.="</table>\n";
 
