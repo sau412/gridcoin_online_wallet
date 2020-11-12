@@ -302,7 +302,7 @@ function coin_rpc_list_received_by_address() {
 		"params" => [$wallet_receive_confirmations],
 	]);
 	$data = coin_rpc_send_query($query);
-	if($data['result']) {
+	if($data['result'] || is_array($data['result'])) {
 		return $data['result'];
 	}
 	throw new Exception("WalletReplyError");
