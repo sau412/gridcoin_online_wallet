@@ -343,6 +343,8 @@ function user_send($user_uid,$amount,$address) {
 
 /**
  * Create new receiving address for user
+ * 
+ * @param $user_uid User uid who requests address
  */
 function user_create_new_address($user_uid) {
         $user_uid_escaped = db_escape($user_uid);
@@ -351,7 +353,7 @@ function user_create_new_address($user_uid) {
         if($address_uid) {
                 $address_uid_escaped = db_escape($address_uid);
                 db_query("UPDATE `wallets` SET `user_uid` = 'user_uid_escaped'
-                                WHERE `address_uid` = '$address_uid_escaped' AND `user_uid` IS NULL");
+                                WHERE `uid` = '$address_uid_escaped' AND `user_uid` IS NULL");
         }
         else {
                 db_query("INSERT INTO `wallets` (`user_uid`) VALUES ('$user_uid_escaped')");
