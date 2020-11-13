@@ -341,12 +341,23 @@ function user_send($user_uid,$amount,$address) {
         return $transaction_uid;
 }
 
-// Create request for new address
-// Returns requiest uid
+/**
+ * Create new receiving address for user
+ */
 function user_create_new_address($user_uid) {
-        $user_uid_escaped=db_escape($user_uid);
-        db_query("INSERT INTO `wallets` (`user_uid`) VALUES ('$user_uid_escaped')");
-        $address_uid=mysql_insert_id();
+        $user_uid_escaped = db_escape($user_uid);
+        db_query("LOCK TABLES `wallets` WRITE");
+        $address_uid = db_query_to_variable('SELECT `uid` FROM `wallets` WHERE `user_uid` IS NULL LIMIT 1');
+        if($address_uid) {
+                $address_uid_escaped = db_escape($address_uid);
+                db_query("UPDATE `wallets` SET `user_uid` = 'user_uid_escaped'
+                                WHERE `address_uid` = '$address_uid_escaped' AND `user_uid` IS NULL");
+        }
+        else {
+                db_query("INSERT INTO `wallets` (`user_uid`) VALUES ('$user_uid_escaped')");
+                $address_uid=mysql_insert_id();
+        }
+        db_query("UNLOCK TABLES");
         return $address_uid;
 }
 
@@ -387,6 +398,36 @@ function is_admin($user_uid) {
         $result=db_query_to_variable("SELECT `is_admin` FROM `users` WHERE `uid`='$user_uid_escaped'");
         if($result==1) return TRUE;
         else return FALSE;
+}
+
+/**
+ * Generates new addresses for wallet
+ * Called from tasks
+ */
+function generate_wallet_addresses() {
+        global $receiving_addresses_cache;
+
+        // Generate requested addresses
+        $addresses_array = db_query_to_array("SELECT `uid`, `user_uid` FROM `wallets` WHERE `address` = '' OR `address` IS NULL");
+
+        foreach($addresses_array as $address_data) {
+                $uid = $address_data['uid'];
+                $address = coin_rpc_get_new_address();
+                $uid_escaped = db_escape($uid);
+                $address_escaped = db_escape($address);
+                echo "New address $address\n";
+                db_query("UPDATE `wallets` SET `address` = '$address_escaped' WHERE `uid` = '$uid_escaped' AND (`address` = '' OR `address` IS NULL)");
+        }
+        
+        // Generate cache addresses
+        $cache_addresses_count = db_query_to_variable("SELECT count(*) FROM `wallets` WHERE `user_uid` IS NULL");
+        
+        for(; $cache_addresses_count < $receiving_addresses_cache; $cache_addresses_count ++) {
+                $address = coin_rpc_get_new_address();
+                $address_escaped = db_escape($address);
+                echo "New cache address $address\n";
+                db_query("INSERT INTO `wallets` (`user_uid`, `address`) VALUES (NULL, '$address_escaped')");
+        }
 }
 
 // For php 5 only variant for random_bytes is openssl_random_pseudo_bytes from openssl lib
