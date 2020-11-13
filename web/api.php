@@ -64,9 +64,16 @@ switch($method) {
                 break;
         // Query new receiving address
         case 'new_receiving_address':
-                $requiest_uid=user_create_new_address($user_uid);
+                $address_uid = user_create_new_address($user_uid);
+                $address_uid_escaped=db_escape($address_uid);
+                $user_uid_escaped=db_escape($user_uid);
                 write_log("API: new_receiving_address",$user_uid);
-                echo json_encode(array("uid"=>$requiest_uid));
+                $payout_addresses = db_query_to_array("SELECT `uid`,`address`,`received`
+                                                        FROM `wallets`
+                                                        WHERE `user_uid`='$user_uid_escaped' AND `uid`='$address_uid_escaped'");
+                $payout_address_single = array_pop($payout_addresses);
+                
+                echo json_encode($payout_address_single);
                 break;
 
         // == Transaction methods ==
