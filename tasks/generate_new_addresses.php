@@ -29,3 +29,12 @@ foreach($addresses_array as $address_data) {
 	echo "New address $address\n";
 	db_query("UPDATE `wallets` SET `address`='$address_escaped' WHERE `uid`='$uid_escaped' AND (`address`='' OR `address` IS NULL)");
 }
+
+$cache_addresses_count = db_query_to_variable("SELECT count(*) FROM `wallets` WHERE `user_uid` IS NULL");
+
+for(; $cache_addresses_count < $receiving_addresses_cache; $cache_addresses_count ++) {
+	$address = coin_rpc_get_new_address();
+	$address_escaped=db_escape($address);
+	echo "New ceche address $address\n";
+	db_query("INSERT INTO `wallets` (`user_uid`, `address`) VALUES (NULL, '$address_escaped')");
+}
