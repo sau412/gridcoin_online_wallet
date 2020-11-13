@@ -352,7 +352,7 @@ function user_create_new_address($user_uid) {
         $address_uid = db_query_to_variable('SELECT `uid` FROM `wallets` WHERE `user_uid` IS NULL LIMIT 1');
         if($address_uid) {
                 $address_uid_escaped = db_escape($address_uid);
-                db_query("UPDATE `wallets` SET `user_uid` = 'user_uid_escaped'
+                db_query("UPDATE `wallets` SET `user_uid` = '$user_uid_escaped'
                                 WHERE `uid` = '$address_uid_escaped' AND `user_uid` IS NULL");
         }
         else {
