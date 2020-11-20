@@ -16,8 +16,7 @@ function html_page_begin($title,$token) {
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="icon" href="favicon.png" type="image/png">
 <script src='jquery-3.5.1.min.js'></script>
-<script src='bootstrap.min.js'></script>
-<script src='popper.min.js'></script>
+<script src='bootstrap.bundle.min.js'></script>
 <link rel="stylesheet" type="text/css" href="normalize.css">
 <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="style.css">
@@ -47,6 +46,11 @@ if(hash != null && hash != '') {
 } else {
         show_block('dashboard');
 }
+
+$(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+});
+
 </script>
 </body>
 </html>
