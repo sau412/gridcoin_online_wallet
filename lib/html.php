@@ -116,9 +116,12 @@ _END;
 }
 
 function html_tabs($user_uid) {
+        global $wallet_name;
+
         $result="";
         $result.=<<<_END
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
+<a class="navbar-brand" href="#">$wallet_name</a>
 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
 <span class="navbar-toggler-icon"></span>
 </button>
