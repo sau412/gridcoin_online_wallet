@@ -13,7 +13,9 @@ function html_page_begin($title,$token) {
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <link rel="icon" href="favicon.png" type="image/png">
-<script src='jquery-3.3.1.min.js'></script>
+<script src='jquery-3.5.1.min.js'></script>
+<link rel="stylesheet" type="text/css" href="normalize.css">
+<link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="style.css">
 <script src='script.js'></script>
 </head>
