@@ -66,7 +66,7 @@ function html_login_form($token) {
 <p>%login_login% <input type=text name=login></p>
 <p>%login_password% <input type=password name=password></p>
 $captcha
-<p><input type=submit value='%login_submit%'></p>
+<p><input type=submit class='btn btn-primary' value='%login_submit%'></p>
 </form>
 
 _END;
@@ -87,7 +87,7 @@ function html_new_address_form($token) {
 <form name=login method=post>
 <input type=hidden name=action value='new_address'>
 <input type=hidden name=token value='$token'>
-<p><input type=submit value='%new_address_submit%'></p>
+<p><input type=submit class='btn btn-primary' value='%new_address_submit%'></p>
 </form>
 
 _END;
@@ -108,7 +108,7 @@ function html_register_form($token) {
 <p>%register_password2% <input type=password name=password2></p>
 <p>%register_withdraw% <input type=text name=withdraw_address></p>
 $captcha
-<p><input type=submit value='%register_submit%'></p>
+<p><input type=submit class='btn btn-primary' value='%register_submit%'></p>
 </form>
 
 _END;
@@ -196,7 +196,7 @@ function html_balance_and_send($user_uid,$token) {
 <p>%send_address% <input type=text size=40 name=address id=send_address></p>
 <p>%send_amount% <input type=text name=amount id=send_amount value=0> $currency_short</p>
 <p><small>%send_fee_label% $sending_fee_formatted $currency_short</small></p>
-<p><input type=submit value='%send_submit%'></p>
+<p><input type=submit class='btn btn-primary' value='%send_submit%'></p>
 </form>
 
 _END;
@@ -463,7 +463,7 @@ function html_user_settings($user_uid,$token) {
         $result.=lang_parser("<p>%settings_new_password2% <input type=password name=new_password2></p>");
 
         // Submit button
-        $result.=lang_parser("<p><input type=submit value='%settings_submit%'></p>\n");
+        $result.=lang_parser("<p><input type=submit class='btn btn-primary' value='%settings_submit%'></p>\n");
         $result.="</form>\n";
 
         return $result;
@@ -500,7 +500,7 @@ function html_admin_settings($user_uid,$token) {
         $result.=lang_parser("<p>%wallet_settings_global_message% ")."<input type=text size=60 name=global_message value='$global_message_html'></p>\n";
 
         // Submit button
-        $result.=lang_parser("<p><input type=submit value='%wallet_settings_submit%'></p>\n");
+        $result.=lang_parser("<p><input type=submit class='btn btn-primary' value='%wallet_settings_submit%'></p>\n");
         $result.="</form>\n";
 
         return $result;
