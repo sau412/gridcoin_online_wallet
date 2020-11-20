@@ -22,8 +22,6 @@ function html_page_begin($title,$token) {
 </head>
 <body>
 <center>
-$lang_select_form
-<h1>$wallet_name</h1>
 
 _END;
 }
@@ -118,6 +116,8 @@ _END;
 function html_tabs($user_uid) {
         global $wallet_name;
 
+        $lang_select_form=lang_select_form($token);
+
         $result="";
         $result.=<<<_END
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -147,9 +147,13 @@ _END;
                 $result.=html_menu_element("register","%tab_register%");
                 $result.=html_menu_element("client_state","%tab_client_state%");
         }
-        $result.="</ul>\n";
-        $result.="</div>\n";
-        $result.="</nav>\n";
+        $result.=<<<_END
+</ul>
+$lang_select_form
+</div>
+</nav>
+
+_END;
 
         return lang_parser($result);
 }

@@ -621,7 +621,7 @@ function lang_message($code) {
 
 function lang_select_form($token) {
         return <<<_END
-<form name=change_language method=post class='lang_selector'>
+<form name=change_language method=post class='form-inline'>
 <input type=hidden name=action value='change_lang'>
 <input type=hidden name=token value='$token'>
 <select name=lang onChange='form.submit();'>
