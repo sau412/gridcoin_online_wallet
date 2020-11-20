@@ -15,6 +15,7 @@ function html_page_begin($title,$token) {
 <link rel="icon" href="favicon.png" type="image/png">
 <script src='jquery-3.5.1.min.js'></script>
 <script src='bootstrap.min.js'></script>
+<script src='popper.min.js'></script>
 <link rel="stylesheet" type="text/css" href="normalize.css">
 <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="style.css">
