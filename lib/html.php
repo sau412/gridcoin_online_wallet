@@ -116,8 +116,15 @@ _END;
 
 function html_tabs($user_uid) {
         $result="";
-        $result.="<div style='display: inline-block;'>\n";
-        $result.="<ul class=horizontal_menu>\n";
+        $result.=<<<_END
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarNav">
+<ul class='navbar-nav'>
+
+_END;
         if($user_uid) {
                 $result.=html_menu_element("info","%tab_info%");
                 $result.=html_menu_element("dashboard","%tab_dashboard%");
@@ -138,12 +145,13 @@ function html_tabs($user_uid) {
         }
         $result.="</ul>\n";
         $result.="</div>\n";
+        $result.="</nav>\n";
 
         return lang_parser($result);
 }
 
 function html_menu_element($block,$text) {
-        return "<li><a href='#$block' onClick=\"show_block('$block')\">$text</a>\n";
+        return "<li class='nav-item active'><a class='nav-link' href='#$block' onClick=\"show_block('$block')\">$text</a>\n";
 }
 
 function html_wallet_form($user_uid,$token) {
