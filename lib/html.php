@@ -576,7 +576,8 @@ function html_block_hash($hash) {
         if($hash=='') return '';
         $hash_begin=substr($hash,0,10);
         $hash_end=substr($hash,-10,10);
-        $result=lang_parser("<span class='url_with_qr_container'>$hash_begin......$hash_end<span class='qr'>$hash<br><a href='$block_url$hash'>%link_block_explorer%</a><br><img src='qr.php?str=$hash'></span></span>");
+        //$result=lang_parser("<span class='url_with_qr_container'>$hash_begin......$hash_end<span class='qr'>$hash<br><a href='$block_url$hash'>%link_block_explorer%</a><br><img src='qr.php?str=$hash'></span></span>");
+        $result=lang_parser("<span data-toggle='popover' title='$hash' data-content="<b>test</b>">$hash_begin......$hash_end</span>");
         return $result;
 }
 
