@@ -173,9 +173,7 @@ if(isset($_COOKIE['message'])) {
 }
 echo html_page_begin($wallet_name,$token);
 echo html_message_global();
-if($user_uid) {
-        echo html_logout_form($user_uid,$token);
-}
+
 if($message) {
         $lang_message=lang_message($message);
         if($lang_message!='') {
@@ -183,6 +181,9 @@ if($message) {
         }
 }
 echo html_tabs($user_uid);
+if($user_uid) {
+        echo html_logout_form($user_uid,$token);
+}
 echo html_loadable_block();
 
 echo html_page_end();
