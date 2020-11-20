@@ -179,7 +179,7 @@ if($user_uid) {
 if($message) {
         $lang_message=lang_message($message);
         if($lang_message!='') {
-                echo "<p class='message'>$lang_message</p>";
+                echo "<div class='alert alert-primary' role='alert'>$lang_message</div>";
         }
 }
 echo html_tabs($user_uid);
