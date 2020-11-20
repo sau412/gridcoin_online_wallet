@@ -512,7 +512,7 @@ function html_message_global() {
 
         $global_message=get_variable("global_message");
         if($global_message!='') {
-                $result.="<div class='message_global'>$global_message</div>";
+                $result.="<div class='alert alert-warning' role='alert'>$global_message</div>";
         }
 
         return $result;
@@ -541,7 +541,7 @@ ORDER BY `timestamp` DESC LIMIT 100");
 }
 
 function html_message($message) {
-        return "<div style='background:yellow;'>".html_escape($message)."</div>";
+        return "<div class='alert alert-primary' role='alert'>".html_escape($message)."</div>";
 }
 
 function html_address_url($address) {
