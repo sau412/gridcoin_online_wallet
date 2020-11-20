@@ -12,6 +12,8 @@ function html_page_begin($title,$token) {
 <title>$title</title>
 <meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta name="format-detection" content="telephone=no">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link rel="icon" href="favicon.png" type="image/png">
 <script src='jquery-3.5.1.min.js'></script>
 <script src='bootstrap.min.js'></script>
