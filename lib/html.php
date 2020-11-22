@@ -329,7 +329,7 @@ function html_transactions($user_uid,$token,$limit=10) {
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
         $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`fee`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
-        $result.="<table class='table table-hover>\n";
+        $result.="<table class='table table-hover'>\n";
         $result.=lang_parser("<tr><th>%transactions_table_header_address%</th><th>%transactions_table_header_amount% $currency_short</th>");
         $result.=lang_parser("<th>%transactions_table_header_fee%</th><th>%transactions_table_header_status%</th>");
         $result.=lang_parser("<th>%transactions_table_header_tx_id%</th><th>%transactions_table_header_timestamp%</th></tr>");
