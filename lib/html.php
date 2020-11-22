@@ -290,7 +290,7 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
         $receiving_addresses_data_array=db_query_to_array("SELECT `wallets`.`address`, `wallets`.`received`, `aliases`.`label` FROM `wallets`
                                                                 LEFT OUTER JOIN `aliases` ON `aliases`.`user_uid` = '$user_uid_escaped' AND `aliases`.`address` = `wallets`.`address`
                                                                 WHERE `wallets`.`user_uid`='$user_uid_escaped' LIMIT $limit");
-        $result.="<table class='table_horizontal'>\n";
+        $result.="<table class='table table-hover'>\n";
         $result.=lang_parser("<tr><th>%receive_table_header_address%</th><th>%receive_table_header_received% $currency_short</th><th>%receive_table_header_label%</th></tr>");
         foreach($receiving_addresses_data_array as $receiving_addresses_data) {
                 $address = $receiving_addresses_data['address'];
@@ -320,7 +320,7 @@ function html_transactions($user_uid,$token,$limit=10) {
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
         $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`fee`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
-        $result.="<table class='table_horizontal'>\n";
+        $result.="<table class='table table-hover>\n";
         $result.=lang_parser("<tr><th>%transactions_table_header_address%</th><th>%transactions_table_header_amount% $currency_short</th>");
         $result.=lang_parser("<th>%transactions_table_header_fee%</th><th>%transactions_table_header_status%</th>");
         $result.=lang_parser("<th>%transactions_table_header_tx_id%</th><th>%transactions_table_header_timestamp%</th></tr>");
@@ -408,7 +408,7 @@ function html_transactions_big($user_uid,$token,$limit=10) {
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
         $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
-        $result.="<table class='table_borderless'>\n";
+        $result.="<table class='table table-hover'>\n";
         foreach($transactions_data_array as $transactions_data) {
                 $address=$transactions_data['address'];
                 $amount=$transactions_data['amount'];
@@ -569,7 +569,7 @@ function html_log_section_admin() {
 JOIN `users` u ON u.`uid`=l.`user_uid`
 ORDER BY `timestamp` DESC LIMIT 100");
 
-        $result.="<table class='table_horizontal'>\n";
+        $result.="<table class='table table-hover'>\n";
         $result.=lang_parser("<tr><th>%log_table_header_timestamp%</th><th>%log_table_header_login%</th><th>%log_table_header_message%</th></tr>\n");
         foreach($data_array as $row) {
                 $login=$row['login'];
