@@ -236,7 +236,7 @@ _END;
 
         $user_uid_escaped=db_escape($user_uid);
         $alias_data_array=db_query_to_array("SELECT `uid`,`address`,`label` FROM `aliases` WHERE `user_uid`='$user_uid_escaped'");
-        $result.="<table class='table_horizontal'>\n";
+        $result.="<table class='table table-hover'>\n";
         $result.=lang_parser("<tr><th>%address_book_table_header_label%</th><th>%address_book_table_header_address%</th></tr>");
         foreach($alias_data_array as $alias_data) {
                 $address=$alias_data['address'];
