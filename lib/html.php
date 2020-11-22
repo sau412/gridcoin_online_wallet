@@ -454,8 +454,23 @@ function html_transactions_big($user_uid,$token,$limit=10) {
                 $address_url=html_address_url($address);
                 $tx_url=html_tx_url($tx_id);
 
-                $result.="<tr><td rowspan=2 title='$status'>$status_symbol</td><td align=left>$timestamp</td><td align=right valign=bottom>$amount</td></tr>\n";
-                $result.="<tr><td align=left valign=top colspan=2>$address_url</td></tr>\n";
+                $result.=<<<_END
+<div class='row'>
+<div class='col-2'>
+$status_symbol
+</div>
+<div class='col-10'>
+<div class='row'>
+<div class='col'>$timestamp</div>
+<div class='col'>$amount</div>
+</div>
+<div class='row'>$address_url</div>
+</div>
+</div>
+_END;
+
+                //$result.="<tr><td rowspan=2 title='$status'>$status_symbol</td><td align=left>$timestamp</td><td align=right valign=bottom>$amount</td></tr>\n";
+                //$result.="<tr><td align=left valign=top colspan=2>$address_url</td></tr>\n";
         }
         $result.="</table>\n";
 
