@@ -228,10 +228,16 @@ function html_balance_and_send($user_uid,$token) {
 <form name=send method=post>
 <input type=hidden name=action value='send'>
 <input type=hidden name=token value='$token'>
-<p>%send_address% <input type=text size=40 name=address id=send_address></p>
-<p>%send_amount% <input type=text name=amount id=send_amount value=0> $currency_short</p>
-<p><small>%send_fee_label% $sending_fee_formatted $currency_short</small></p>
-<p><input type=submit class='btn btn-primary' value='%send_submit%'></p>
+<div class='form-group row'>
+<label for=send_address class='col-sm-2'>%send_address%</label>
+<input type=text class="form-control col-sm-10" name=address id=send_address>
+</div>
+<div class='form-group row'>
+<label for=send_amount class='col-sm-2'>%send_amount%</label>
+<input type=text class="form-control col-sm-10" name=amount id=send_amount value=0> $currency_short
+<small>%send_fee_label% $sending_fee_formatted $currency_short</small>
+</div>
+<input type=submit class='btn btn-primary' value='%send_submit%'>
 </form>
 
 _END;
