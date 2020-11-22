@@ -228,11 +228,11 @@ function html_address_book($user_uid,$token,$form=TRUE,$limit=10) {
 <input type=hidden name=action value='add_alias'>
 <input type=hidden name=token value='$token'>
 <div class='form-group'>
-<label for='alias_name'>%address_book_label%</label>
+<label for='alias_name' class='col-form-label'>%address_book_label%</label>
 <input type=text class="form-control" name=name id=alias_name>
 </div>
 <div class='form-group'>
-<label for='alias_address'>%address_book_address%</label>
+<label for='alias_address' class='col-form-label'>%address_book_address%</label>
 <input type=text class="form-control" size=40 name=address id='alias_address'>
 </div>
 <input type=submit class='btn btn-primary' value='%address_book_submit%'></p>
