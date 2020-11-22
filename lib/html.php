@@ -235,8 +235,8 @@ function html_balance_and_send($user_uid,$token) {
 <div class='form-group row'>
 <label for=send_amount class='col-sm-2'>%send_amount%</label>
 <div class="col-sm-10 row">
-<input type=text class="form-control" name=amount id=send_amount value=0>
-$currency_short
+<input type=text class="form-control col" name=amount id=send_amount value=0>
+<span class="col">$currency_short</span>
 </div>
 <small>%send_fee_label% $sending_fee_formatted $currency_short</small>
 </div>
