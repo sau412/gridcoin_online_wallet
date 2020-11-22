@@ -363,28 +363,20 @@ function html_client_state() {
 
         // Block count
         $current_block=get_variable("current_block");
-        $result.="<p>%client_state_current_block% $current_block</p>\n";
 
-        // Block hash
         $block_hash=get_variable("current_block_hash");
         $block_hash=html_block_hash($block_hash);
-        $result.="<p>%client_state_current_block_hash% $block_hash</p>\n";
 
-        // Payouts enabled
         $payouts_enabled=get_variable("payouts_enabled");
         $payouts_enabled_value=$payouts_enabled?"<span class='enabled'>%client_state_enabled%</span>":"<span class='disabled'>%client_state_disabled%</span>";
-        $result.="<p>%client_state_payouts% $payouts_enabled_value</p>\n";
 
-        // API enabled
         $api_enabled=get_variable("api_enabled");
         $api_enabled_value=$api_enabled?"<span class='enabled'>%client_state_enabled%</span>":"<span class='disabled'>%client_state_disabled%</span>";
-        $result.="<p>%client_state_api% $api_enabled_value</p>\n";
 
-        // Client state
         $client_last_update=get_variable("client_last_update");
         $last_update_interval=date("U")-$client_last_update;
         if($last_update_interval>0 && $last_update_interval<300) {
-                $result.="<p>%client_state_client_state% <span class='enabled'>%client_state_on%</span></p>\n";
+                $client_state_value="<span class='enabled'>%client_state_on%</span>";
         } else {
                 $minutes=floor($last_update_interval/60);
                 if($minutes>120) {
@@ -393,8 +385,20 @@ function html_client_state() {
                 } else {
                         $off_time="$minutes %client_state_minute%";
                 }
-                $result.="<p>%client_state_client_state% <span class='disabled'>%client_state_off% ($off_time)</span></p>\n";
+                $client_state_value="<span class='disabled'>%client_state_off% ($off_time)</span>";
         }
+
+        $result.=<<<_END
+<table class='table table-hover'>
+<tr><th>%client_state_current_block%</th><td>$current_block</td></tr>
+<tr><th>%client_state_current_block_hash%</th><td>$block_hash</td></tr>
+<tr><th>%client_state_payouts%</th><td>$payouts_enabled_value</td></tr>
+<tr><th>%client_state_api%</th><td>$api_enabled_value</td></tr>
+<tr><th>%client_state_client_state%</th><td>$client_state_value</td></tr>
+</table>
+_END;
+
+        // Client state
         return lang_parser($result);
 }
 
