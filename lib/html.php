@@ -224,10 +224,18 @@ function html_address_book($user_uid,$token,$form=TRUE,$limit=10) {
 
         if($form) {
                 $add_alias_form=<<<_END
-<form name=add_alias method=post>
+<form name=add_alias method=post class='form-inline'>
 <input type=hidden name=action value='add_alias'>
 <input type=hidden name=token value='$token'>
-<p>%address_book_label% <input type=text name=name id=alias_name> %address_book_address% <input type=text size=40 name=address id=alias_address> <input type=submit value='%address_book_submit%'></p>
+<div class='form-group'>
+<label for='alias_name'>%address_book_label%</label>
+<input type=text name=name id=alias_name>
+</div>
+<div class='form-group'>
+<label for='alias_address'>%address_book_address%</label>
+<input type=text size=40 name=address id='alias_address'>
+</div>
+<input type=submit class='btn btn-primary' value='%address_book_submit%'></p>
 </form>
 
 _END;
