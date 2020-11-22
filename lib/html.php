@@ -23,6 +23,7 @@ function html_page_begin($title,$token) {
 <script src='script.js'></script>
 </head>
 <body>
+<div class='container'>
 
 _END;
 }
@@ -35,6 +36,7 @@ function html_page_end() {
 <hr width=10%>
 <p>%footer_about%</p>
 <p><img src='https://arikado.xyz/counter/?site=$project_counter_name'></p>
+</div>
 <script>
 
 var hash = window.location.hash.substr(1);
