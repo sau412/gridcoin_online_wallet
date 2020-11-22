@@ -224,7 +224,7 @@ function html_address_book($user_uid,$token,$form=TRUE,$limit=10) {
 
         if($form) {
                 $add_alias_form=<<<_END
-<form name=add_alias method=post class='form-inline'>
+<form name=add_alias method=post>
 <input type=hidden name=action value='add_alias'>
 <input type=hidden name=token value='$token'>
 <div class='form-group'>
