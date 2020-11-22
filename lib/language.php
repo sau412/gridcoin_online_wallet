@@ -267,9 +267,9 @@ $json_language=<<<_END
         "fr":"Note:"
         },
 "address_book_address":{
-        "en":"address:",
-        "ru":"адрес:",
-        "fr":"adresse:"
+        "en":"Address:",
+        "ru":"Адрес:",
+        "fr":"Adresse:"
         },
 "address_book_submit":{
         "en":"Add",
