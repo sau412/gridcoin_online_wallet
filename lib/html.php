@@ -113,13 +113,28 @@ function html_register_form($token) {
 <form name=register method=post>
 <input type=hidden name=action value='register'>
 <input type=hidden name=token value='$token'>
-<p>%register_login% <input type=text name=login></p>
-<p>%register_mail% <input type=text name=mail></p>
-<p>%register_password1% <input type=password name=password1></p>
-<p>%register_password2% <input type=password name=password2></p>
-<p>%register_withdraw% <input type=text name=withdraw_address></p>
+<div class='form-group row'>
+<label for=login class='col-sm-2'>%register_login%</label>
+<input type=text class="form-control col-sm-10" id=login name=login>
+</div>
+<div class='form-group row'>
+<label for=mail class='col-sm-2'>%register_mail%</label>
+<input type=text class="form-control col-sm-10" id=mail name=mail>
+</div>
+<div class='form-group row'>
+<label for=password class='col-sm-2'>%register_password1%</label>
+<input type=password class="form-control col-sm-10" id=password name=password1>
+</div>
+<div class='form-group row'>
+<label for=password2 class='col-sm-2'>%register_password2%</label>
+<input type=password class="form-control col-sm-10" id=password2 name=password2>
+</div>
+<div class='form-group row'>
+<label for=withdraw_address class='col-sm-2'>%register_withdraw%</label>
+<input type=text class="form-control col-sm-10" id=withdraw_address name=withdraw_address>
+</div>
 $captcha
-<p><input type=submit class='btn btn-primary' value='%register_submit%'></p>
+<input type=submit class='btn btn-primary' value='%register_submit%'>
 </form>
 
 _END;
