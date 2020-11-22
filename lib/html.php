@@ -72,12 +72,12 @@ function html_login_form($token) {
 <label for=login class='col-sm-2'>%login_login%</label>
 <input type=text class="form-control col-sm-10" id=login name=login>
 </div>
-<div>
+<div class='form-group row'>
 <label for=password class='col-sm-2'>%login_password%</label>
 <input type=password class="form-control col-sm-10" id=password name=password>
 </div>
 $captcha
-<p><input type=submit class='btn btn-primary' value='%login_submit%'></p>
+<input type=submit class='btn btn-primary' value='%login_submit%'>
 </form>
 
 _END;
@@ -626,7 +626,13 @@ function html_info() {
 // Show captcha
 function html_captcha() {
         $result=<<<_END
-<p><img src='?captcha'><br>Code from image above: <input type=text name=captcha_code></p>
+
+<img src='?captcha'>
+<div class='form-group row'>
+<label for=captcha_code class='col-sm-2'>Code from image above:</label>
+<input type=text class="form-control col-sm-10" id=captcha_code name=captcha_code></p>
+</div>
+
 _END;
         return $result;
 }
