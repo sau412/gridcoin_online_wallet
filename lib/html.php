@@ -33,9 +33,11 @@ function html_page_end() {
         global $project_counter_name;
 
         $result=<<<_END
+<center>
 <hr width=10%>
 <p>%footer_about%</p>
 <p><img src='https://arikado.xyz/counter/?site=$project_counter_name'></p>
+</center>
 </div>
 <script>
 
