@@ -23,7 +23,6 @@ function html_page_begin($title,$token) {
 <script src='script.js'></script>
 </head>
 <body>
-<div class='container'>
 
 _END;
 }
@@ -38,7 +37,6 @@ function html_page_end() {
 <p>%footer_about%</p>
 <p><img src='https://arikado.xyz/counter/?site=$project_counter_name'></p>
 </center>
-</div>
 <script>
 
 var hash = window.location.hash.substr(1);
@@ -608,7 +606,7 @@ function html_address_book_link($address,$text) {
 
 // Loadable block for ajax
 function html_loadable_block() {
-        return lang_parser("<div id='main_block'>%loading_block%</div>\n");
+        return lang_parser("<div class='container' id='main_block'>%loading_block%</div>\n");
 }
 
 // Show info
