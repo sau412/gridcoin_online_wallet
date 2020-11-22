@@ -68,8 +68,14 @@ function html_login_form($token) {
 <form name=login method=post>
 <input type=hidden name=action value='login'>
 <input type=hidden name=token value='$token'>
-<p>%login_login% <input type=text name=login></p>
-<p>%login_password% <input type=password name=password></p>
+<div class='form-group row'>
+<label for=login class='col-sm-2'>%login_login%</label>
+<input type=text class="form-control col-sm-10" id=login name=login>
+</div>
+<div>
+<label for=password class='col-sm-2'>%login_password%</label>
+<input type=password class="form-control col-sm-10" id=password name=password>
+</div>
 $captcha
 <p><input type=submit class='btn btn-primary' value='%login_submit%'></p>
 </form>
