@@ -429,24 +429,25 @@ function html_transactions_big($user_uid,$token,$limit=10) {
                 $tx_id=$transactions_data['tx_id'];
                 $timestamp=$transactions_data['timestamp'];
 
+                $timestamp = str_replace(" ", "&nbsp;", $timestamp);
                 $amount=round($amount,8);
 
                 switch($status) {
                         case 'sent':
                         case 'processing':
-                                $amount="<span style='color:red;'>-$amount $currency_short</span>";
+                                $amount="<span style='color:red;'>-$amount&nbsp;$currency_short</span>";
                                 $status_symbol="<span style='color:red;font-size:250%'>&minus;</span>";
                                 break;
                         case 'pending':
-                                $amount="$amount $currency_short";
+                                $amount="$amount&nbsp;$currency_short";
                                 $status_symbol="<span style='color:green;font-size:250%'>&hellip;</span>";
                                 break;
                         case 'received':
-                                $amount="$amount $currency_short";
+                                $amount="$amount&nbsp;$currency_short";
                                 $status_symbol="<span style='color:green;font-size:250%'>&plus;</span>";
                                 break;
                         default:
-                                $amount="$amount $currency_short";
+                                $amount="$amount&nbsp;$currency_short";
                                 $status_symbol="<span style='color:red;font-size:250%'>!</span>";
                                 break;
                 }
