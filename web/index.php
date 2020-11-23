@@ -141,9 +141,14 @@ if(isset($_GET['ajax']) && isset($_GET['block'])) {
                                 echo html_user_settings($user_uid,$token);
                                 break;
                         case 'transactions':
-                                $limit=10000;
-                                echo html_transactions($user_uid,$token,$limit);
+                                $limit = 100;
+                                echo html_transactions($user_uid, $token, $limit);
                                 break;
+                        case 'transactions_csv':
+                                $limit = 10000;
+                                echo html_transactions_csv($user_uid, $token, $limit);
+                                break;
+                                
                 }
         } else {
                 switch($_GET['block']) {

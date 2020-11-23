@@ -328,7 +328,7 @@ function html_receiving_addresses($user_uid,$token,$form=TRUE,$limit=10) {
 }
 
 // Transactions
-function html_transactions($user_uid,$token,$limit=10) {
+function html_transactions($user_uid, $token, $limit = 100) {
         global $currency_short;
         global $wallet_receive_confirmations;
 
@@ -368,6 +368,38 @@ function html_transactions($user_uid,$token,$limit=10) {
                 $result.="<tr><td>$address_url</td><td align=right>$amount</td><td>$fee_formatted</td><td>$status</td><td>$tx_url</td><td>$timestamp</td></tr>\n";
         }
         $result.="</table>\n";
+
+        if(count($transactions_data_array) == $limit) {
+                $result .= "<button class='btn btn-primary' onClick='download_transactions_csv(\"$user_uid\",\"$token\");'>Download all in CSV</button>";
+        }
+
+        // Return result
+        return $result;
+}
+
+// Transactions
+function html_transactions_csv($user_uid, $token, $limit = 10000) {
+        global $currency_short;
+        global $wallet_receive_confirmations;
+
+        // Transactions
+        $user_uid_escaped=db_escape($user_uid);
+        $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`fee`,`status`,`tx_id`,`confirmations`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
+        $result = "Address;Amount;Fee;Status;Confirmations;Transaction;Timestamp;\n";
+        foreach($transactions_data_array as $transactions_data) {
+                $address=$transactions_data['address'];
+                $amount=$transactions_data['amount'];
+		$fee=$transactions_data['fee'];
+                $status=$transactions_data['status'];
+                $confirmations=$transactions_data['confirmations'];
+                $tx_id=$transactions_data['tx_id'];
+                $timestamp=$transactions_data['timestamp'];
+
+                $amount=round($amount,8);
+		$fee_formatted=sprintf("%0.8f",$fee);
+
+                $result .= "$address;$amount;$fee_formatted;$status;$confirmations;$tx_id;$timestamp;\n";
+        }
 
         // Return result
         return $result;
