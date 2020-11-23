@@ -193,19 +193,35 @@ function html_menu_element($block,$text) {
 function html_wallet_form($user_uid,$token) {
         global $currency_short;
 
-        $result="";
-        $result.="<table><tr><td valign=top style='padding: 0 1em;'>";
+        $result = "";
+        $result .= <<<_END
+<div class="row">
+<div class="col">
+
+_END;
+        //$result.="<table><tr><td valign=top style='padding: 0 1em;'>";
 
         // Balance
         $result.=html_balance_and_send($user_uid,$token);
         $result.=html_client_state();
 
+        $result .= <<<_END
+</div>
+<div class="col">
+
+_END;
+
         // Transactions
         $limit=8;
-        $result.="</td><td valign=top style='padding: 0 1em;'>";
+        //$result.="</td><td valign=top style='padding: 0 1em;'>";
         $result.=html_transactions_big($user_uid,$token,$limit);
 
-        $result.="</td></tr></table>";
+        $result .= <<<_END
+</div>
+</div>
+
+_END;
+        //$result.="</td></tr></table>";
 
         // Return result
         return $result;
@@ -421,7 +437,6 @@ function html_transactions_big($user_uid,$token,$limit=10) {
         $result.=lang_parser("<h2>%transactions_header%</h2>\n");
         $user_uid_escaped=db_escape($user_uid);
         $transactions_data_array=db_query_to_array("SELECT `address`,`amount`,`status`,`tx_id`,`timestamp` FROM `transactions` WHERE `user_uid`='$user_uid_escaped' ORDER BY `timestamp` DESC LIMIT $limit");
-        $result.="<table class='table table-hover'>\n";
         foreach($transactions_data_array as $transactions_data) {
                 $address=$transactions_data['address'];
                 $amount=$transactions_data['amount'];
@@ -473,7 +488,7 @@ _END;
                 //$result.="<tr><td rowspan=2 title='$status'>$status_symbol</td><td align=left>$timestamp</td><td align=right valign=bottom>$amount</td></tr>\n";
                 //$result.="<tr><td align=left valign=top colspan=2>$address_url</td></tr>\n";
         }
-        $result.="</table>\n";
+        //$result.="</table>\n";
 
         // Return result
         return $result;
