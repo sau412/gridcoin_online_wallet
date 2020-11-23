@@ -8,7 +8,6 @@ function show_block(block_name) {
 function download_transactions_csv(user_uid, token) {
         $.get("./?ajax=1&block=transactions_csv")
                 .done(function(data) {
-                        console.log(data);
                         // https://stackoverflow.com/questions/17564103/using-javascript-to-download-file-as-a-csv-file
                         let downloadLink = document.createElement("a");
                         let blob = new Blob(["\ufeff", data]);
