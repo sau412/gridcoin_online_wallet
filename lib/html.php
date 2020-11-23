@@ -237,13 +237,13 @@ function html_balance_and_send($user_uid,$token) {
 <input type=hidden name=action value='send'>
 <input type=hidden name=token value='$token'>
 <div class='form-group row'>
-<label for=send_address class='col-sm-2'>%send_address%</label>
-<input type=text class="form-control col-sm-10" name=address id=send_address>
+<label for=send_address class='col-2 col-md-4'>%send_address%</label>
+<input type=text class="form-control col-10 col-md-8" name=address id=send_address>
 </div>
 <div class='form-group row'>
-<label for=send_amount class='col-sm-2'>%send_amount%</label>
+<label for=send_amount class='col-2 col-md-4'>%send_amount%</label>
 <div class="col-sm-10 row">
-<input type=text class="form-control col" name=amount id=send_amount value=0>
+<input type=text class="form-control col-10 col-md-8" name=amount id=send_amount value=0>
 <span class="col">$currency_short</span>
 </div>
 <small class="form-text text-muted">%send_fee_label% $sending_fee_formatted $currency_short</small>
