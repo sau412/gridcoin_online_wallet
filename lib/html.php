@@ -193,35 +193,27 @@ function html_menu_element($block,$text) {
 function html_wallet_form($user_uid,$token) {
         global $currency_short;
 
-        $result = "";
-        $result .= <<<_END
+        $balance_and_send = html_balance_and_send($user_uid, $token);
+        $client_state = html_client_state();
+        $limit=8;
+        $transactions_big = html_transactions_big($user_uid, $token, $limit);
+
+        $result = <<<_END
 <div class="row row-cols-1 row-cols-md-2">
 <div class="col">
-
-_END;
-        //$result.="<table><tr><td valign=top style='padding: 0 1em;'>";
-
-        // Balance
-        $result.=html_balance_and_send($user_uid,$token);
-        $result.=html_client_state();
-
-        $result .= <<<_END
+<div class="col">
+$balance_and_send
 </div>
 <div class="col">
-
-_END;
-
-        // Transactions
-        $limit=8;
-        //$result.="</td><td valign=top style='padding: 0 1em;'>";
-        $result.=html_transactions_big($user_uid,$token,$limit);
-
-        $result .= <<<_END
+$client_state
+</div>
+</div>
+<div class="col">
+$transactions_big
 </div>
 </div>
 
 _END;
-        //$result.="</td></tr></table>";
 
         // Return result
         return $result;
