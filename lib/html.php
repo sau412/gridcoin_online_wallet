@@ -472,15 +472,15 @@ function html_transactions_big($user_uid,$token,$limit=10) {
 
                 $result.=<<<_END
 <div class='row'>
-<div class='col-1'>
+<div class='col-2'>
 $status_symbol
 </div>
-<div class='col-11'>
+<div class='col-10'>
 <div class='row'>
 <div class='col'>$timestamp</div>
-<div class='col'>$amount</div>
+<div class='col justify-content-end'>$amount</div>
 </div>
-<div class='row'>$address_url</div>
+<div class='col'>$address_url</div>
 </div>
 </div>
 _END;
