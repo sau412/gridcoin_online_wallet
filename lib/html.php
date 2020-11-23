@@ -242,14 +242,15 @@ function html_balance_and_send($user_uid,$token) {
 </div>
 <div class='form-group row'>
 <label for=send_amount class='col-2 col-md-4'>%send_amount%</label>
-<div class="col-sm-10 row">
-<input type=text class="form-control col-10 col-md-8" name=amount id=send_amount value=0>
-<span class="col">$currency_short</span>
+<div class="col-10 col-md-8 row">
+<input type=text class="form-control col-8" name=amount id=send_amount value=0>
+<span class="col-4">$currency_short</span>
 </div>
 <small class="form-text text-muted">%send_fee_label% $sending_fee_formatted $currency_short</small>
 </div>
 <input type=submit class='btn btn-primary' value='%send_submit%'>
 </form>
+        
 
 _END;
         return lang_parser($result);
