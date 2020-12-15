@@ -141,7 +141,7 @@ _END;
         return lang_parser($result);
 }
 
-function html_tabs($user_uid) {
+function html_tabs($user_uid, $token) {
         global $wallet_name;
 
         $lang_select_form=lang_select_form($token);
