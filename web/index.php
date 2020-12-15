@@ -185,7 +185,7 @@ if($message) {
                 echo "<div class='alert alert-primary' role='alert'>$lang_message</div>";
         }
 }
-echo html_tabs($user_uid);
+echo html_tabs($user_uid, $token);
 if($user_uid) {
         echo html_logout_form($user_uid,$token);
 }
