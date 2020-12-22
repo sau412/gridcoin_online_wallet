@@ -111,7 +111,7 @@ if(isset($network_block) && $network_block!=0) {
 }
 
 $received_hash = [];
-$received_transactions_array = db_query_to_array("SELECT DISTINCT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
+$received_transactions_array = db_query_to_array("SELECT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
 foreach($received_transactions_array as $received_transaction_data) {
 	$tx_id = $received_transaction_data['tx_id'];
 	$address = $received_transaction_data['address'];
