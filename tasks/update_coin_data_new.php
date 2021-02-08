@@ -100,7 +100,7 @@ $wallet_block=get_variable("current_block");
 if(isset($wallet_block) && $wallet_block!=0 && isset($network_block) && $network_block!=0) {
 	if($network_block<$wallet_block) {
 		set_variable("payouts_enabled",0);
-		log_write("Wallet block '$wallet_block' greater than network block '$network_block', possible fork, sending disabled");
+		log_write("Wallet block '$wallet_block' greater than network block '$network_block', possible fork, sending disabled", 3);
 	}
 }
 
