@@ -3,16 +3,23 @@
 
 $wallet_name="Gridcoin wallet";
 $wallet_domain="";
-$wallet_receive_confirmations=10;
+$wallet_receive_confirmations=1;
 $currency_short="GRC";
 $currency="Gridcoin";
+$sending_fee_core = 0.001;
+$sending_fee_user = 0.001;
+$min_send_amount = 0.00000001;
+$receiving_addresses_cache = 20;
+
+$project_internal_name = "set_project_name_here";
 // For counter
-$project_counter_name="";
+$project_counter_name = $project_internal_name;
 // For logging
-$project_log_name="";
+$project_log_name = $project_internal_name;
+$logger_url = "set_ypur_logger_here";
 
 // DB variables
-$db_host="";
+$db_host=""; // Fozzy VPN
 $db_login="";
 $db_password="";
 $db_base="";
@@ -21,8 +28,6 @@ $db_base="";
 $salt="";
 
 // Email service
-$email_api_url="https://api.smtp2go.com/v3/email/send";
-$email_api_key="";
 $email_sender="";
 $email_reply_to="";
 $email_notify="";
@@ -39,11 +44,14 @@ $settings_api_enabled=TRUE;
 $settings_payouts_enabled=TRUE;
 $settings_login_enabled=TRUE;
 $default_language="en";
-$lockfile="";
-$sending_fee_core = 0;
-$sending_fee_user = 0;
+$lockfile="/tmp/gridcoin_wallet_lockfile";
 
 // URLs for links
 $address_url="https://www.gridcoinstats.eu/address/";
 $tx_url="https://www.gridcoinstats.eu/tx/";
 $block_url="https://www.gridcoinstats.eu/block/";
+
+// Broker settings
+$broker_url = "";
+$broker_key = "";
+$broker_project_name = $project_internal_name;
