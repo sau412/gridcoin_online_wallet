@@ -26,13 +26,6 @@ if(count($transactions_to_send)!=0) {
 	$sendmany_user_uids = [];
 	$sendmany_data = [];
 
-	// Unlock wallet
-	if(coin_rpc_unlock_wallet() == FALSE) {
-		echo "Unlock wallet error\n";
-		write_log("Unlock wallet error");
-		die();
-	}
-
 	// Commit transactions
 	foreach($transactions_to_send as $tx_data) {
 		$uid = $tx_data['uid'];
@@ -67,6 +60,13 @@ if(count($transactions_to_send)!=0) {
 		}
 
 		update_user_balance($user_uid);
+	}
+
+	// Unlock wallet
+	if(coin_rpc_unlock_wallet() == FALSE) {
+		echo "Unlock wallet error\n";
+		write_log("Unlock wallet error");
+		die();
 	}
 
 	// Send transactions with sendmany
