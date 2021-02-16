@@ -12,6 +12,11 @@ function coin_rpc_send_query($query) {
 //echo "$coin_rpc_login:$coin_rpc_password\n";
 	curl_setopt($ch, CURLOPT_POSTFIELDS,$query);
 	$result=curl_exec($ch);
+	log_write([
+		"function" => "coin_rpc_send_query",
+		"query" => $query,
+		"wallet_reply_raw" => $result,
+	], 7);
 //var_dump("curl error",curl_error($ch));
 	curl_close($ch);
 	if($result == '') {
