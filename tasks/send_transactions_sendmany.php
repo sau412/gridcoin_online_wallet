@@ -71,7 +71,13 @@ if(count($transactions_to_send)!=0) {
 
 	// Send transactions with sendmany
 	if(count($sendmany_data) > 0) {
-		coin_rpc_set_tx_fee($sending_fee_core);
+		if($sending_fee_method == "settxfee") {
+			coin_rpc_set_tx_fee($sending_fee_core);
+		}
+		else {
+			$smart_fee_info = coin_rpc_estimate_smart_fee($sending_fee_blocks);
+			coin_rpc_set_tx_fee($smart_fee_info['feerate']);
+		}
 		$tx_id = coin_rpc_sendmany($sendmany_data);
 		$tx_uids_str_escaped = implode("','", $sendmany_tx_uids);
 		if($tx_id == NULL || $tx_id == FALSE) {

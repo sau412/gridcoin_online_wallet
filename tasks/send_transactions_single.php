@@ -39,7 +39,13 @@ if(count($transactions_to_send)!=0) {
 		$uid_escaped=db_escape($uid);
 
 		if(coin_rpc_validate_address($address)===TRUE) {
-			coin_rpc_set_tx_fee($sending_fee_core);
+			if($sending_fee_method == "settxfee") {
+				coin_rpc_set_tx_fee($sending_fee_core);
+			}
+			else {
+				$smart_fee_info = coin_rpc_estimate_smart_fee($sending_fee_blocks);
+				coin_rpc_set_tx_fee($smart_fee_info['feerate']);
+			}
 			$tx_id=coin_rpc_send($address,$amount);
 
 			if($tx_id==NULL || $tx_id==FALSE) {

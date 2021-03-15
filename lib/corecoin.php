@@ -181,6 +181,20 @@ function coin_rpc_set_tx_fee($fee_amount) {
 	throw new Exception("WalletReplyError");
 }
 
+// Get smart fee info
+function coin_rpc_estimate_smart_fee($blocks) {
+	$query = json_encode([
+		"id" => 1,
+		"method" => "estimatesmartfee",
+		"params" => [$blocks],
+	]);
+	$data = coin_rpc_send_query($query);
+	if($data['result']) {
+		return $data['result'];
+	}
+	throw new Exception("WalletReplyError");
+}
+
 // Send coins
 function coin_rpc_send($coin_address,$amount) {
 	$amount = sprintf("%0.8F",$amount);
