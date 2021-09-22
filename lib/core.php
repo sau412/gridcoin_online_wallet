@@ -311,7 +311,7 @@ function user_send($user_uid,$amount,$address) {
         // Validate data
         if(!validate_number($amount)) return FALSE;
         if(!validate_ascii($address)) return FALSE;
-        if($amount <= $min_send_amount) return FALSE;
+        if($amount < $min_send_amount) return FALSE;
         if($address=="") return FALSE;
 
         // Check user balance
