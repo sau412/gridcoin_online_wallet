@@ -196,8 +196,8 @@ function coin_rpc_estimate_smart_fee($blocks) {
 }
 
 // Send coins
-function coin_rpc_send($coin_address,$amount) {
-	$amount = sprintf("%0.8F",$amount);
+function coin_rpc_send($coin_address, $amount) {
+	$amount = (double) sprintf("%0.8F", $amount);
 	$query = json_encode([
 		"id" => 1,
 		"method" => "sendtoaddress",
