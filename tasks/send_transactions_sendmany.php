@@ -19,7 +19,7 @@ db_connect();
 
 // Send pending transactions
 echo "Sending transactions\n";
-$transactions_to_send=db_query_to_array("SELECT `uid`,`user_uid`,`amount`,`address` FROM `transactions` WHERE `status`='processing'");
+$transactions_to_send=db_query_to_array("SELECT `uid`,`user_uid`,`amount`,`address` FROM `transactions` WHERE `status`='processing' LIMIT 20");
 
 if(count($transactions_to_send)!=0) {
 	$sendmany_tx_uids = [];
