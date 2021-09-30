@@ -8,6 +8,7 @@ require_once("../lib/logger.php");
 
 db_connect();
 
+echo "Getting transactions...\n";
 $tx_data_array=db_query_to_array("SELECT * FROM `transactions`");
 
 foreach($tx_data_array as $row) {
@@ -16,6 +17,7 @@ foreach($tx_data_array as $row) {
     $status = $row['status'];
     if($tx_id == '') continue;
 
+    echo "Checking transaction $tx_id...\n";
     $tx_data = coin_rpc_get_single_transaction($tx_id);
     $confirmations = $tx_data['confirmations'];
     if($confirmations >= 0) continue;
