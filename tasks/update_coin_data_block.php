@@ -45,16 +45,17 @@ function update_transaction($txid) {
     $total_amount = [];
     foreach($vout_array as $vout) {
         $vout_value = $vout['value'];
-        $vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
-		if(!isset($total_amount[$vout_address])) {
-			$total_amount[$vout_address] = 0;
+		if(isset($vout["scriptPubKey"]["addresses"])) {
+			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
+			if(!isset($total_amount[$vout_address])) {
+				$total_amount[$vout_address] = 0;
+			}
+			$total_amount[$vout_address] += $vout_value;
 		}
-		$total_amount[$vout_address] += $vout_value;
     }
 
 	foreach($total_amount as $address => $total_amount) {
 		$address_escaped = db_escape($address);
-		$user_uid_escaped = db_escape($user_uid);
 		$txid_escaped = db_escape($txid);
 		$total_amount_escaped = db_escape($total_amount);
 		// Check if address belongs to wallet
@@ -62,6 +63,7 @@ function update_transaction($txid) {
 		if(!$user_uid) {
 			continue;
 		}
+		$user_uid_escaped = db_escape($user_uid);
 		echo "Address $address belongs to wallet, received $total_amount\n";
 
 		// Check if transaction exists
