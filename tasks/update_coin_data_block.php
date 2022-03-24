@@ -112,7 +112,7 @@ if($network_block > $wallet_block) {
     while($wallet_block <= $network_block) {
         $wallet_block ++;
 	    $current_block_hash = coin_rpc_get_block_hash($wallet_block);
-        $block_info = coin_rpc_get_block_hash($current_block_hash);
+        $block_info = coin_rpc_get_block_info($current_block_hash);
         if($block_info['tx']) {
             foreach($block_info['tx'] as $txid) {
                 echo "Block $wallet_block transaction $txid\n";
