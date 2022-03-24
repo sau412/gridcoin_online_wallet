@@ -97,6 +97,9 @@ function update_transaction($txid) {
 						VALUES ('$user_uid_escaped', '$total_amount_escaped', '$address_escaped',
 								'$status_escaped', '$txid_escaped', '$confirmations_escaped')");
 		}
+
+		update_received_by_address($address);
+		update_user_balance($user_uid);
 	}
 }
 
@@ -146,70 +149,6 @@ else {
 	echo "Nothing to update\n";
 }
 
-/*
-$received_hash = [];
-$received_transactions_array = db_query_to_array("SELECT `tx_id`, `address` FROM `transactions` WHERE `status` IN ('received')");
-foreach($received_transactions_array as $received_transaction_data) {
-	$tx_id = $received_transaction_data['tx_id'];
-	$address = $received_transaction_data['address'];
-
-	$hash = hash("sha256", $tx_id.$address);
-	if(!in_array($hash, $received_hash)) {
-		$received_hash[] = $hash;
-	}
-}
-
-$received_in_db = [];
-$received_in_db_array = db_query_to_array("SELECT `address`, `received` FROM `wallets`");
-foreach($received_in_db_array as $received_row) {
-	$address = $received_row['address'];
-	$received = $received_row['received'];
-	$received_in_db[$address] = $received;
-}
-*/
-/*
-$received_by_address_array = coin_rpc_list_received_by_address();
-
-foreach($received_by_address_array as $received_by_address) {
-    $address = $received_by_address['address'];
-    $amount = $received_by_address['amount'];
-    $txids_array = $received_by_address['txids'];
-
-    if(!$address) continue;
-    if(!$amount) continue;
-	if(!isset($received_in_db[$address])) continue;
-	
-	$address_escaped = db_escape($address);
-	$received = $received_in_db[$address];
-    //$received = db_query_to_variable("SELECT `received` FROM `wallets` WHERE `address` = '$address_escaped'");
-	$received_in_transactions = $received;
-	// Required only for thorough checking
-
-	$update_all = false;
-
-	if($amount > $received || $received != $received_in_transactions || $update_all) {
-        $user_uid=db_query_to_variable("SELECT `user_uid` FROM `wallets` WHERE `address`='$address_escaped'");
-
-        if(!$user_uid) continue;
-
-		echo "Something received user $user_uid for $address\n";
-		echo "Received by wallet $received, received by transactions $received_in_transactions, syncing transactions\n";
-
-        foreach($txids_array as $txid) {
-			$hash = hash("sha256", $txid.$address);
-			if(!in_array($hash, $received_hash) || $received != $received_in_transactions) {
-				echo "Syncing transaction $txid\n";
-				update_transaction($user_uid, $address, $txid);
-			} else {
-				echo "Transaction $txid already exists\n";
-			}
-        }
-		update_received_by_address($address);
-		update_user_balance($user_uid);
-    }
-}
-*/
-
 // Generating new addresses
 echo "Generating new addresses\n";
 generate_wallet_addresses();
@@ -218,7 +157,7 @@ generate_wallet_addresses();
 set_variable("client_last_update", date("U"));
 
 // Update balance
-$balance=coin_rpc_get_balance();
+$balance = coin_rpc_get_balance();
 set_variable("wallet_balance", $balance);
 
 
