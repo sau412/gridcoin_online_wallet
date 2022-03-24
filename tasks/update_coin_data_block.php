@@ -31,7 +31,13 @@ function update_received_by_address($address) {
 function update_transaction($txid) {
     global $wallet_receive_confirmations;
 
-    $transaction = coin_rpc_get_single_transaction($txid);
+	try {
+    	$transaction = coin_rpc_get_single_transaction($txid);
+	}
+	catch(Exception $e) {
+		echo "Transaction $txid is not belonging to wallet\n";
+		return;
+	}
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
