@@ -80,9 +80,15 @@ switch($method) {
         // Get all transactions
         case 'get_all_transactions':
                 $user_uid_escaped=db_escape($user_uid);
+                $from_uid = 0;
+                if(isset($_POST['from_uid'])) {
+                        $from_uid = $_POST['from_uid'];
+                }
+                $from_uid_escaped=db_escape($from_uid);
                 $transactions_array=db_query_to_array("SELECT `uid`,`amount`,`address`,`status`,`tx_id`,`confirmations`,`timestamp`
                 										FROM `transactions`
-                										WHERE `user_uid`='$user_uid_escaped'");
+                										WHERE `user_uid`='$user_uid_escaped'
+                                                                                                AND `uid` >= $from_uid");
                 //write_log("API: get_all_transactions",$user_uid);
                 echo json_encode($transactions_array);
                 break;
