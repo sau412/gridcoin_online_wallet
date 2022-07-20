@@ -41,7 +41,7 @@ function update_transaction($txid) {
 
 	// Gridcoin shows staking transaction like incoming transaction with negative amount
 	// Skip it
-	if($transaction['amount'] && $transaction['amount'] < 0) {
+	if(isset($transaction['amount']) && $transaction['amount'] < 0) {
 		return;
 	}
 

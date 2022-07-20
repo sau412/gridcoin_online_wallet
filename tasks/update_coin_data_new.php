@@ -35,7 +35,7 @@ function update_transaction($user_uid, $address, $txid) {
 
 	// Gridcoin shows staking transaction like incoming transaction with negative amount
 	// Skip it
-	if($transaction['amount'] && $transaction['amount'] < 0) {
+	if(isset($transaction['amount']) && $transaction['amount'] < 0) {
 		return;
 	}
 
