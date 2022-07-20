@@ -38,6 +38,13 @@ function update_transaction($txid) {
 		echo "Transaction $txid is not belonging to wallet\n";
 		return;
 	}
+
+	// Gridcoin shows staking transaction like incoming transaction with negative amount
+	// Skip it
+	if($transaction['amount'] && $transaction['amount'] < 0) {
+		return;
+	}
+
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
