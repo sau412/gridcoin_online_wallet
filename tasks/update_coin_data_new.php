@@ -32,6 +32,13 @@ function update_transaction($user_uid, $address, $txid) {
     global $wallet_receive_confirmations;
 
     $transaction = coin_rpc_get_single_transaction($txid);
+
+	// Gridcoin shows staking transaction like incoming transaction with negative amount
+	// Skip it
+	if($transaction['amount'] && $transaction['amount'] < 0) {
+		return;
+	}
+
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
