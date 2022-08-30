@@ -39,11 +39,6 @@ function update_transaction($txid) {
 		return;
 	}
 
-	// Gridcoin shows staking transaction like incoming transaction with negative amount
-	// Skip it
-	if(isset($transaction['amount']) && $transaction['amount'] < 0) {
-		return;
-	}
 	// Skip PoS transactions
 	if(isset($transaction['generated']) && $transaction['generated'] == true) {
 		return;
@@ -61,6 +56,10 @@ function update_transaction($txid) {
     $total_amount = [];
     foreach($vout_array as $vout) {
         $vout_value = $vout['value'];
+		if(isset($vout["scriptPubKey"]["type"]) && $vout["scriptPubKey"]["type"] == "nonstandard") {
+			echo "Transaction $txid has nonstandard out, skipping all\n";
+			return;
+		}
 		if(isset($vout["scriptPubKey"]["addresses"])) {
 			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
 			if(!isset($total_amount[$vout_address])) {
