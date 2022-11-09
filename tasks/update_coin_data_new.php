@@ -56,10 +56,18 @@ function update_transaction($user_uid, $address, $txid) {
     $total_amount = 0;
     foreach($vout_array as $vout) {
         $vout_value = $vout['value'];
-        $vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
-        if($address == $vout_address) {
-            $total_amount += $vout_value;
-        }
+		if(is_array($vout["scriptPubKey"]["addresses"])) {
+        	$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
+			if($address == $vout_address) {
+				$total_amount += $vout_value;
+			}
+		}
+		else if($vout["scriptPubKey"]["address"]) {
+			$vout_address = $vout["scriptPubKey"]["address"];
+			if($address == $vout_address) {
+				$total_amount += $vout_value;
+			}
+		}
     }
 
     $address_escaped = db_escape($address);
