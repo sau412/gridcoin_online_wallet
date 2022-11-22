@@ -54,11 +54,21 @@ function update_transaction($txid) {
 	}
     $confirmations = $transaction["confirmations"];
     $total_amount = [];
-    foreach($vout_array as $vout) {
+    foreach($vout_array as $tx_index => $vout) {
         $vout_value = $vout['value'];
 		if(isset($vout["scriptPubKey"]["type"]) && $vout["scriptPubKey"]["type"] == "nonstandard") {
-			echo "Transaction $txid has nonstandard out, skipping all\n";
-			return;
+			echo "Transaction $txid has nonstandard out\n";
+
+			// Need to find previous transaction
+			$prev_transaction_info = coin_rpc_get_single_transaction($txid);
+
+			// Find address and amount info in previous transaction
+			$prev_transaction_amount = $prev_transaction_info['vout'][1]['value'];
+			
+			// Add prev transaction out amount as negative to current transaction
+			$total_amount[$vout_address] = -$prev_transaction_amount;
+
+			continue;
 		}
 		if(isset($vout["scriptPubKey"]["addresses"])) {
 			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
