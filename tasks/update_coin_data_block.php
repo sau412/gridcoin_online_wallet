@@ -69,6 +69,9 @@ function update_transaction($txid) {
 					$prev_transaction_amount = $prev_transaction_info['vout'][1]['value'];
 				
 					// Add prev transaction out amount as negative to current transaction
+					if(!isset($total_amount[$vout_address])) {
+						$total_amount[$vout_address] = 0;
+					}
 					$total_amount[$vout_address] = -$prev_transaction_amount;
 				}
 			}
@@ -76,6 +79,13 @@ function update_transaction($txid) {
 		}
 		if(isset($vout["scriptPubKey"]["addresses"])) {
 			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
+			if(!isset($total_amount[$vout_address])) {
+				$total_amount[$vout_address] = 0;
+			}
+			$total_amount[$vout_address] += $vout_value;
+		}
+		if(isset($vout["scriptPubKey"]["address"])) {
+			$vout_address = $vout["scriptPubKey"]["address"];
 			if(!isset($total_amount[$vout_address])) {
 				$total_amount[$vout_address] = 0;
 			}
