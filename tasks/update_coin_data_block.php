@@ -54,6 +54,9 @@ function update_transaction($txid) {
 	}
     $confirmations = $transaction["confirmations"];
     $total_amount = [];
+	$nonstandard = false;
+	$nonstandard_input = 0;
+
     foreach($vout_array as $vout_index => $vout) {
         $vout_value = $vout['value'];
 		$vout_address = '';
@@ -80,15 +83,21 @@ function update_transaction($txid) {
 				if($prev_transaction_info['vout'][1]['value']) {
 					$prev_transaction_amount = $prev_transaction_info['vout'][1]['value'];
 					echo "Previous transaction amount is $prev_transaction_amount\n";
-					
-					// Add prev transaction out amount as negative to current transaction
-					$total_amount[$vout_address] -= $prev_transaction_amount;
+
+					// Add prev transaction out amount as negative to next transaction
+					$nonstandard = true;
+					$nonstandard_input = $prev_transaction_amount;
 				}
 			}
 			continue;
 		}
 
-		if($vout_address && $vout_value) {
+		if($nonstandard && $vout_index == 1) {
+			$total_amount[$vout_address] += $vout_value - $nonstandard_input;
+			$nonstandard = false;
+			$nonstandard_input = 0;
+		}
+		else if($vout_address && $vout_value) {
 			$total_amount[$vout_address] += $vout_value;
 		}
     }
