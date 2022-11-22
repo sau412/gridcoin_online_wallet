@@ -80,7 +80,7 @@ function update_transaction($txid) {
 				$prev_transaction_info = coin_rpc_get_single_transaction($prev_txid);
 
 				// Find address and amount info in previous transaction out's
-				if($prev_transaction_info['vout'][1]['value']) {
+				if(isset($prev_transaction_info['vout'][1]) && isset($prev_transaction_info['vout'][1]['value'])) {
 					$prev_transaction_amount = $prev_transaction_info['vout'][1]['value'];
 					echo "Previous transaction amount is $prev_transaction_amount\n";
 
@@ -94,6 +94,7 @@ function update_transaction($txid) {
 
 		if($nonstandard && $vout_index == 1) {
 			$total_amount[$vout_address] += $vout_value - $nonstandard_input;
+			echo "For transaction $txid vout index $vout_index actual amount vin $nonstandard_input vout $vout_value\n";
 			$nonstandard = false;
 			$nonstandard_input = 0;
 		}
