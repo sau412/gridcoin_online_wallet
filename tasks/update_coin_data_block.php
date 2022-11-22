@@ -93,8 +93,9 @@ function update_transaction($txid) {
 		}
 
 		if($nonstandard && $vout_index == 1) {
-			$total_amount[$vout_address] += $vout_value - $nonstandard_input;
-			echo "For transaction $txid vout index $vout_index actual amount vin $nonstandard_input vout $vout_value\n";
+			$actual_amount = $vout_value - $nonstandard_input;
+			$total_amount[$vout_address] += $actual_amount;
+			echo "For transaction $txid vout index $vout_index vin $nonstandard_input vout $vout_value actual amount $actual_amount\n";
 			$nonstandard = false;
 			$nonstandard_input = 0;
 		}
