@@ -54,41 +54,41 @@ function update_transaction($txid) {
 	}
     $confirmations = $transaction["confirmations"];
     $total_amount = [];
-    foreach($vout_array as $vout) {
+    foreach($vout_array as $vout_index => $vout) {
         $vout_value = $vout['value'];
+		$vout_address = '';
+		if(isset($vout["scriptPubKey"]["addresses"])) {
+			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
+		}
+		else if(isset($vout["scriptPubKey"]["address"])) {
+			$vout_address = $vout["scriptPubKey"]["address"];
+		}
+		if($vout_address && !isset($total_amount[$vout_address])) {
+			$total_amount[$vout_address] = 0;
+		}
+
 		if(isset($vout["scriptPubKey"]["type"]) && $vout["scriptPubKey"]["type"] == "nonstandard") {
 			echo "Transaction $txid has nonstandard out\n";
 
 			// Need to find previous transaction
 			if(isset($transaction['vin'][0]['txid'])) {
 				$prev_txid = $transaction['vin'][0]['txid'];
+				echo "Previous transaction is $prev_txid\n";
 				$prev_transaction_info = coin_rpc_get_single_transaction($prev_txid);
 
 				// Find address and amount info in previous transaction out's
 				if($prev_transaction_info['vout'][1]['value']) {
 					$prev_transaction_amount = $prev_transaction_info['vout'][1]['value'];
-				
+					echo "Previous transaction amount is $prev_transaction_amount\n";
+					
 					// Add prev transaction out amount as negative to current transaction
-					if(!isset($total_amount[$vout_address])) {
-						$total_amount[$vout_address] = 0;
-					}
-					$total_amount[$vout_address] = -$prev_transaction_amount;
+					$total_amount[$vout_address] -= $prev_transaction_amount;
 				}
 			}
 			continue;
 		}
-		if(isset($vout["scriptPubKey"]["addresses"])) {
-			$vout_address = array_pop($vout["scriptPubKey"]["addresses"]);
-			if(!isset($total_amount[$vout_address])) {
-				$total_amount[$vout_address] = 0;
-			}
-			$total_amount[$vout_address] += $vout_value;
-		}
-		if(isset($vout["scriptPubKey"]["address"])) {
-			$vout_address = $vout["scriptPubKey"]["address"];
-			if(!isset($total_amount[$vout_address])) {
-				$total_amount[$vout_address] = 0;
-			}
+
+		if($vout_address && $vout_value) {
 			$total_amount[$vout_address] += $vout_value;
 		}
     }
