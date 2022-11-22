@@ -39,10 +39,6 @@ function update_transaction($txid) {
 		return;
 	}
 
-	// Skip PoS transactions
-	if(isset($transaction['generated']) && $transaction['generated'] == true) {
-		return;
-	}
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
