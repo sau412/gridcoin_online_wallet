@@ -18,5 +18,5 @@ function email_add($to, $subject, $body) {
 		"body" => $body,
 	];
 	
-	auth_log($message, 6);
+	write_log($message, 6);
 }
