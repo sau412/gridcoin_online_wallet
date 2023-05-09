@@ -6,7 +6,6 @@ require_once("../lib/core.php");
 require_once("../lib/html.php");
 require_once("../lib/email.php");
 require_once("../lib/captcha.php");
-require_once("../lib/broker.php");
 require_once("../lib/logger.php");
 
 db_connect();

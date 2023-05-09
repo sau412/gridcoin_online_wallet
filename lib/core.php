@@ -294,7 +294,7 @@ function notify_user($user_uid,$subject,$body) {
         $mail=db_query_to_variable("SELECT `mail` FROM `users` WHERE `uid`='$user_uid_escaped'");
         $mail_notify_enabled=db_query_to_variable("SELECT `mail_notify_enabled` FROM `users` WHERE `uid`='$user_uid_escaped'");
         if($mail && $mail_notify_enabled) {
-                email_add($user_uid,$mail,$subject,$body);
+                email_add($mail,$subject,$body);
         }
 }
 

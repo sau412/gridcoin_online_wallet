@@ -1,14 +1,16 @@
 <?php
 // Email sending functions
 
-// Send email via broker
-function email_add($user_uid,$to,$subject,$body) {
+// Send email
+function email_add($to, $subject, $body) {
 	global $email_sender;
 	global $email_reply_to;
-	global $broker_project_name;
 	
+	$headers = "From: $email_sender\r\n" .
+    	"Reply-To: $email_reply_to\r\n";
+	mail($to, $subject, $body, $headers);
+
 	$message = [
-		"source" => $broker_project_name,
 		"to" => $to,
 		"from" => $email_sender,
 		"reply" => $email_reply_to,
@@ -16,7 +18,5 @@ function email_add($user_uid,$to,$subject,$body) {
 		"body" => $body,
 	];
 	
-	log_write($message, 6);
-	
-	broker_add("mailer", $message);
+	auth_log($message, 6);
 }

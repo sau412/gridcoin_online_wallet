@@ -50,8 +50,3 @@ $lockfile="/tmp/gridcoin_wallet_lockfile";
 $address_url="https://www.gridcoinstats.eu/address/";
 $tx_url="https://www.gridcoinstats.eu/tx/";
 $block_url="https://www.gridcoinstats.eu/block/";
-
-// Broker settings
-$broker_url = "";
-$broker_key = "";
-$broker_project_name = $project_internal_name;
