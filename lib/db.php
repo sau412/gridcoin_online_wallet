@@ -8,8 +8,8 @@ function db_connect() {
         global $db_host,$db_login,$db_password,$db_base;
         $res=mysql_pconnect($db_host,$db_login,$db_password);
         if(!$res) {
-                log_write("Cannot connect to database", 3);
-                throw new Exception("Cannot connect to database");
+                //log_write("Cannot connect to database", 3);
+                //throw new Exception("Cannot connect to database");
         }
         mysql_select_db($db_base);
 //      db_query("SET NAMES 'utf8'");
