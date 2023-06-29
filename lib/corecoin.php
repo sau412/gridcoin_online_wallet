@@ -82,6 +82,7 @@ function coin_rpc_get_current_superblock_number() {
 
 // Get transaction
 function coin_rpc_get_single_transaction($txid) {
+	global $currency;
 	if(in_array($currency, ["BTC", "LTC", ])) {
 		$query = json_encode([
 			"id" => 1,
