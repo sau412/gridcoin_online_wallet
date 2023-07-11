@@ -82,7 +82,7 @@ if(count($transactions_to_send)!=0) {
 		if($tx_id == NULL || $tx_id == FALSE) {
 			echo "Sendmany error\n";
 			var_dump($sendmany_data);
-			//db_query("UPDATE `transactions` SET `tx_id`='',`status`='sending error' WHERE `uid` IN ('$tx_uids_str_escaped')");
+			db_query("UPDATE `transactions` SET `tx_id`='',`status`='sendmany_error' WHERE `uid` IN ('$tx_uids_str_escaped')");
 		}
 		else {
 			echo "Sendmany ok\n";
