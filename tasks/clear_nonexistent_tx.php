@@ -9,7 +9,7 @@ require_once("../lib/logger.php");
 db_connect();
 
 echo "Getting transactions...\n";
-$tx_data_array=db_query_to_array("SELECT * FROM `transactions`");
+$tx_data_array=db_query_to_array("SELECT * FROM `transactions` ORDER BY `uid` DESC LIMIT 10000");
 
 foreach($tx_data_array as $row) {
     $tx_uid = $row['uid'];
@@ -20,7 +20,7 @@ foreach($tx_data_array as $row) {
     echo "Checking transaction $tx_id...\n";
     $tx_data = coin_rpc_get_single_transaction($tx_id);
 
-    if($tx_data['generated']) {
+    if(isset($tx_data['generated']) && $tx_data['generated']) {
         echo "Transaction $tx_id is generated transaction\n";
     }
 
