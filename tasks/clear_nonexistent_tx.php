@@ -19,6 +19,11 @@ foreach($tx_data_array as $row) {
 
     echo "Checking transaction $tx_id...\n";
     $tx_data = coin_rpc_get_single_transaction($tx_id);
+
+    if($tx_data['generated']) {
+        echo "Transaction $tx_id is generated transaction\n";
+    }
+
     $confirmations = $tx_data['confirmations'];
     if($confirmations >= 0) continue;
     
