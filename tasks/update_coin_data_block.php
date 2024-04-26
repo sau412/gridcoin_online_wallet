@@ -38,6 +38,11 @@ function update_transaction($txid) {
 		return;
 	}
 
+	if(isset($transaction['generated']) && $transaction['generated'] == true) {
+		echo "Transaction $txid is generated\n";
+		return;
+	}
+
 	$vout_array = $transaction['vout'];
 	if(!$vout_array) {
 		$vout_array = $transaction['decoded']['vout'];
